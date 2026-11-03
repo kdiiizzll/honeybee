@@ -9,8 +9,8 @@
 <link rel="manifest" href="manifest.json"><link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
 <meta property="og:type" content="website"><meta property="og:title" content="For Honeybee ♥"><meta property="og:description" content="Tap to open">
 <meta property="og:url" content="https://kdiiizzll.github.io/honeybee/paris/">
-<meta property="og:image" content="https://kdiiizzll.github.io/honeybee/paris/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="The Eiffel Tower glowing gold under a starry Paris sky">
-<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="For Honeybee ♥"><meta name="twitter:description" content="Tap to open"><meta name="twitter:image" content="https://kdiiizzll.github.io/honeybee/paris/og.png">
+<meta property="og:image" content="https://kdiiizzll.github.io/honeybee/paris/og.png?v=2"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="The Eiffel Tower glowing gold on a sunny Paris day with a hot air balloon">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="For Honeybee ♥"><meta name="twitter:description" content="Tap to open"><meta name="twitter:image" content="https://kdiiizzll.github.io/honeybee/paris/og.png?v=2">
 <style>
 html,body{margin:0;height:100%;background:#030620;overflow:hidden;overscroll-behavior:none;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;cursor:none}
 canvas{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;display:block;background:#030620;touch-action:none}
@@ -54,9 +54,13 @@ for(let t=0;t<300;t++){const nt=pBag[pBag.length-1];let fs=Math.round(fs0*(t<100
  return{day:dy,t0:pT,D:dy?2.4:1.1+Math.random()*0.4,ax,ay,bx,by,L,dir,ux:(bx-ax)/L,uy:(by-ay)/L,cv,nx,ny,tw,th,fs,dust};}
 return null;}
 function pStarDraw(e,ta){const D=e.D,u=ta/D,r0=0.45*D,r1=D+0.7,h1=r1+4.5,h2=h1+2.8;if(ta>h2)return false;x.globalCompositeOperation='lighter';
-if(e.day&&u<1.2){const k=Math.min(u,1),hx=e.ax+(e.bx-e.ax)*k,hy=e.ay+(e.by-e.ay)*k+Math.sin(u*9)*U*0.006,f=u>1?1-(u-1)/0.2:Math.min(1,u*6),a=Math.atan2(e.uy,e.ux),s=U*0.022;x.globalCompositeOperation='source-over';
- x.globalAlpha=0.5*f;x.strokeStyle='#ffffff';x.lineWidth=Math.max(1,U*0.0018);x.setLineDash([U*0.008,U*0.008]);x.beginPath();x.moveTo(e.ax,e.ay);for(let j=1;j<=20;j++){const b=j/20*k;x.lineTo(e.ax+(e.bx-e.ax)*b,e.ay+(e.by-e.ay)*b+Math.sin(b/1*9*1)*0);}x.stroke();x.setLineDash([]);
- x.globalAlpha=f;x.save();x.translate(hx,hy);x.rotate(a);x.fillStyle='#ffffff';x.strokeStyle='rgba(60,80,120,0.7)';x.lineWidth=Math.max(1,U*0.0012);x.beginPath();x.moveTo(s,0);x.lineTo(-s*0.7,-s*0.55);x.lineTo(-s*0.35,0);x.lineTo(-s*0.7,s*0.45);x.closePath();x.fill();x.stroke();x.fillStyle='#d9e2ee';x.beginPath();x.moveTo(s,0);x.lineTo(-s*0.35,0);x.lineTo(-s*0.55,s*0.18);x.closePath();x.fill();x.restore();x.globalCompositeOperation='lighter';}
+if(e.day&&u<1.2){const k=Math.min(u,1),f=u>1?1-(u-1)/0.2:Math.min(1,u*6),s=U*0.021,hx=e.ax+(e.bx-e.ax)*k+Math.sin(pT*1.7)*s*0.25,hy=e.ay+(e.by-e.ay)*k+Math.sin(pT*2.3)*s*0.35,a=Math.sin(pT*1.9)*0.12;x.globalCompositeOperation='source-over';x.globalAlpha=f;x.save();x.translate(hx,hy);x.rotate(a);
+ x.strokeStyle='rgba(120,60,70,0.75)';x.lineWidth=Math.max(1,U*0.0014);x.beginPath();x.moveTo(0,s*0.95);for(let j=1;j<=14;j++){const t=j/14;x.lineTo(Math.sin(t*12+pT*3)*s*0.22*t,s*0.95+t*s*2.1);}x.stroke();
+ const hp=()=>{x.beginPath();x.moveTo(0,s*0.9);x.bezierCurveTo(-s*1.25,s*0.05,-s*0.95,-s*1.0,0,-s*0.35);x.bezierCurveTo(s*0.95,-s*1.0,s*1.25,s*0.05,0,s*0.9);x.closePath();};
+ let q=x.createRadialGradient(-s*0.3,-s*0.4,s*0.1,0,0,s*1.2);q.addColorStop(0,'#ff8fa6');q.addColorStop(0.55,'#e0445f');q.addColorStop(1,'#a8243c');x.fillStyle=q;hp();x.fill();
+ x.fillStyle='#b8304a';x.beginPath();x.moveTo(-s*0.1,s*1.0);x.lineTo(s*0.1,s*1.0);x.lineTo(0,s*0.86);x.fill();
+ x.fillStyle='rgba(255,255,255,0.75)';x.beginPath();x.ellipse(-s*0.45,-s*0.38,s*0.2,s*0.11,-0.7,0,6.283);x.fill();x.fillStyle='rgba(255,255,255,0.5)';x.beginPath();x.arc(-s*0.18,-s*0.55,s*0.06,0,6.283);x.fill();
+ x.restore();x.globalAlpha=1;x.globalCompositeOperation='lighter';}
 else if(!e.day&&u<1.2){const k=Math.min(u,1),hx=e.ax+(e.bx-e.ax)*k,hy=e.ay+(e.by-e.ay)*k,f=u>1?1-(u-1)/0.2:Math.min(1,u*6),TL=e.L*0.6*Math.min(1,u*2.2)*(u>1?f:1),tx=hx-e.ux*TL,ty=hy-e.uy*TL;
  let gr=x.createLinearGradient(hx,hy,tx,ty);gr.addColorStop(0,`rgba(255,250,230,${0.9*f})`);gr.addColorStop(0.35,`rgba(255,205,120,${0.6*f})`);gr.addColorStop(1,'rgba(255,170,70,0)');x.strokeStyle=gr;x.lineCap='round';x.lineWidth=Math.max(2.5,U*0.0045);x.beginPath();x.moveTo(hx,hy);x.lineTo(tx,ty);x.stroke();
  gr=x.createLinearGradient(hx,hy,hx-e.ux*TL*0.4,hy-e.uy*TL*0.4);gr.addColorStop(0,`rgba(255,255,255,${f})`);gr.addColorStop(1,'rgba(255,255,255,0)');x.strokeStyle=gr;x.lineWidth=Math.max(1,U*0.0014);x.beginPath();x.moveTo(hx,hy);x.lineTo(hx-e.ux*TL*0.4,hy-e.uy*TL*0.4);x.stroke();
@@ -165,8 +169,8 @@ x.globalCompositeOperation=dn?'source-over':'lighter';for(const f of pFl){if(dn&
 x.globalAlpha=1;x.globalCompositeOperation='source-over';}
 
 // day/night: automatic by local time (day 7:00-18:59), ?mode=day|night for testing; ~3 s crossfade
-function pWantDay(){const qm=qs.get('mode');if(qm==='day')return 1;if(qm==='night'||pOG)return 0;const h=new Date().getHours();return h>=7&&h<19?1:0;}
-let pChk=0;function pTick(dt){if((pChk-=dt)<=0){pChk=1;pTgt=pWantDay();const dl=new Date(),lb=dl.toLocaleDateString('en-US',{weekday:'long'})+' • '+dl.toLocaleDateString('en-US',{month:'short'})+' '+dl.getDate();if(lb!==pBalLb){pBalLb=lb;pBalSg=[null,null];}}if(pMix!==pTgt){pMix=pTgt>pMix?Math.min(pTgt,pMix+dt/3):Math.max(pTgt,pMix-dt/3);}}
+function pWantDay(){const qm=qs.get('mode');if(qm==='day')return 1;if(qm==='night')return 0;if(pOG)return 1;const h=new Date().getHours();return h>=7&&h<19?1:0;}
+let pChk=0;function pTick(dt){if((pChk-=dt)<=0){pChk=1;pTgt=pWantDay();let dl=new Date(),lb=dl.toLocaleDateString('en-US',{weekday:'long'})+' • '+dl.toLocaleDateString('en-US',{month:'short'})+' '+dl.getDate();if(pOG)lb='Bear ♥ Honeybee';if(lb!==pBalLb){pBalLb=lb;pBalSg=[null,null];}}if(pMix!==pTgt){pMix=pTgt>pMix?Math.min(pTgt,pMix+dt/3):Math.max(pTgt,pMix-dt/3);}}
 // ---------- phone shell: start screen, fullscreen, wake lock, resize, adaptive frame rate ----------
 const qs=new URLSearchParams(location.search);pOG=qs.has('og')||qs.has('icon');var pNoT=qs.has('icon');const go=document.getElementById('go');let started=false,wl=null;
 function init(){DPR=Math.min(2,window.devicePixelRatio||1);const cw=innerWidth,ch=innerHeight;W=Math.round(cw*DPR);H=Math.round(ch*DPR);c.width=W;c.height=H;x.setTransform(1,0,0,1,0,0);pInit();pFrame(0);}
