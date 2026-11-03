@@ -313,7 +313,7 @@ pBuf=pCv(W,H);pBx=pBuf.getContext('2d');pBalInit();pLiveInit();}
 function pFrame(dt){pT+=dt;pTick(dt);pGlStep(dt);const m=pMix;if(m<1)pDraw(dt,0,true);if(m>0){if(m<1){const x0=x;x=pBx;pDraw(0,1,false);x=x0;x.globalAlpha=m;x.drawImage(pBuf,0,0);x.globalAlpha=1;}else pDraw(dt,1,true);}}
 function pDraw(dt,dn,prim){const L=pL[dn],VIS=pGlVis();x.globalCompositeOperation='source-over';x.globalAlpha=1;x.drawImage(L.bg,0,0);if(pLv.bu>=10||pLv.bu===11)pBuSky(dn);if(pLv.tint)pHolSky(dn);if(pLv.bu===11){const k=pWK();if(k>0){const q=x.createLinearGradient(0,0,0,pFY);q.addColorStop(0,dn?'rgba(255,140,185,0.07)':'rgba(255,100,170,0.09)');q.addColorStop(0.65,dn?'rgba(255,175,160,0.09)':'rgba(255,140,160,0.10)');q.addColorStop(1,dn?'rgba(255,200,110,0.16)':'rgba(255,185,100,0.16)');x.globalAlpha=k;x.fillStyle=q;x.fillRect(0,0,W,pFY);x.globalAlpha=1;}}
 if(dn){for(const c of pCl){const w=c.cv.width,xx=((c.x0+pT*c.sp)%(W+w))-w;x.globalAlpha=0.9;x.drawImage(c.cv,xx,c.y);}x.globalAlpha=1;
- {const cyc=pT%24;if(cyc<14){const k=cyc/14,bx0=-W*0.15+k*W*1.3,by0=H*(0.3+0.06*Math.sin(Math.floor(pT/24)*2.1));x.strokeStyle='rgba(45,55,75,0.75)';x.lineWidth=Math.max(1.2,U*0.0022);x.lineCap='round';x.beginPath();for(let i=0;i<5;i++){const bx=bx0-i*U*0.035+Math.sin(i*2.3)*U*0.01,by=by0+Math.abs(i-1.5)*U*0.018+Math.sin(pT*0.7+i)*U*0.006,ws=U*0.011,fl=Math.sin(pT*9+i*1.7)*ws*0.6;x.moveTo(bx-ws,by-fl);x.quadraticCurveTo(bx-ws*0.4,by-fl*0.3-ws*0.2,bx,by);x.quadraticCurveTo(bx+ws*0.4,by-fl*0.3-ws*0.2,bx+ws,by-fl);}x.stroke();}}}
+}pAvSky(dn,L);
 if(!dn){
 x.fillStyle='#fff';for(const st of pSt){x.globalAlpha=Math.max(0,st[3]*(0.55+0.45*Math.sin(pT*st[4]+st[5])));if(st[2]>2*DPR)x.drawImage(pStr,st[0]-pStr.width/2,st[1]-pStr.height/2);else x.fillRect(st[0],st[1],st[2],st[2]);}
 x.globalAlpha=1;x.globalCompositeOperation='lighter';
@@ -332,7 +332,7 @@ if(shw>0){const env=shw,fr=Math.floor(pT*10);x.globalCompositeOperation='lighter
  x.globalAlpha=1;x.globalCompositeOperation='source-over';}
 for(const [scn,of] of VIS)if(!dn&&scn==='eiffel'){const pBX=pSG.eiffel.BX+of,pBY=pSG.eiffel.BY,r0=U*(0.012+0.004*Math.sin(pT*3));x.globalCompositeOperation='lighter';x.globalAlpha=0.7;x.drawImage(pGl,pBX-r0,pBY-r0,r0*2,r0*2);x.globalAlpha=1;x.globalCompositeOperation='source-over';}
 x.drawImage(L.rv,0,pRvY);x.globalCompositeOperation=dn?'source-over':'lighter';for(const [scn,of] of VIS){const RF=L.sc[scn].rf,TX=pSG[scn].TX+of,n4=6,sh=RF.height/n4;for(let i=0;i<n4;i++){x.globalAlpha=dn?0.42:0.5+0.35*shw;const dx=Math.sin(pT*1.7+i*1.3)*U*0.0025*(i+1);x.drawImage(RF,0,i*sh,RF.width,sh,TX+dx,pRv0+i*sh,RF.width,sh);}}x.globalAlpha=1;x.globalCompositeOperation='source-over';
-if(pLv.bu>=2)pBuRiver(dn);pBoats(dn);x.drawImage(L.sk,0,0);if(!pOG)pLiveMid(dn,dt,prim);
+if(pLv.bu>=2)pBuRiver(dn);pAvSwans(dn,0);pBoats(dn);pAvSwans(dn,1);pAvGulls(dn);x.drawImage(L.sk,0,0);pAvPerch(dn);if(!pOG)pLiveMid(dn,dt,prim);
 {const nw=pNow().getTime(),m0=WEDDING_UTC-nw,z=n=>String(n).padStart(2,'0'),dg=ms=>{const dd=Math.floor(ms/864e5);return [dd,`${dd} day${dd===1?'':'s'}  `,`${z(Math.floor(ms/36e5)%24)}h  ${z(Math.floor(ms/6e4)%60)}m  ${z(Math.floor(ms/1e3)%60)}s`];};
  // one counter: counts down to noon, then up; a 0-day part never shows once married ('0 days' collapses away over ~1 s at noon)
  let pre='',dp,hm,dc=1,lk=0;if(m0>0){[,dp,hm]=dg(Math.ceil(m0/1000)*1000);}else{const L=pNow(),wl=Date.UTC(L.getFullYear(),L.getMonth(),L.getDate(),L.getHours(),L.getMinutes(),L.getSeconds(),L.getMilliseconds());let y=0;while(Date.UTC(WEDDING_Y+y+1,WEDDING_M,WEDDING_D,12)<=wl)y++;const r=Math.max(0,wl-Date.UTC(WEDDING_Y+y,WEDDING_M,WEDDING_D,12));let dd;[dd,dp,hm]=dg(r);if(y>=1)pre=`${y} year${y>1?'s':''}  `;
@@ -719,6 +719,99 @@ let last=performance.now(),cost=8,cap=0;
 function frame(t){requestAnimationFrame(frame);if(t-last<cap)return;const dt=Math.min((t-last)/1000,0.07);last=t;const a=performance.now();pFrame(dt);cost=cost*0.95+(performance.now()-a)*0.05;cap=cost>13?31:cost<7?0:cap;}
 requestAnimationFrame(frame);
 
+// ---------- Paris birds (pigeons, swallows, doves, gulls, sparrows) and Seine swans ----------
+var pAv=null,pBalBox=null;
+function pAvRom(){const k=pLv.key;if(pAv.rk===k)return;pAv.rk=k;const d=pNow(),md=String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');pAv.heart=md==='02-14'||(md==='11-14'&&d.getFullYear()>=2026);pAv.rom=pAv.heart||pLv.fx.includes('rose');}
+function pAvInit(L){const R=pRng(4242);pAv={k:W+'x'+H,ko:[],per:[],rk:'',sw:[null,null],hs:[null,null]};
+ // perches: near rooftops (found by scanning the rooftop silhouette once) + the near quay wall
+ const y0=Math.floor(pRv0+pRvH+1),hh=Math.max(1,Math.floor(H-y0)),ps=U*(pPort?0.0125:0.0095);let d=null;try{d=L.sk.getContext('2d').getImageData(0,y0,W,hh).data;}catch(e){}
+ const roofAt=X=>{if(!d)return -1;X=Math.max(0,Math.min(W-1,Math.round(X)));for(let yy=0;yy<hh;yy++)if(d[(yy*W+X)*4+3]>200)return y0+yy;return -1;};
+ for(const fx of (pPort?[0.09,0.31,0.71,0.92]:[0.06,0.19,0.37,0.63,0.82,0.95])){let best=-1,bx=0;for(let k=-3;k<=3;k++){const X=W*fx+k*ps*0.8,yy=roofAt(X);if(yy>0&&(best<0||yy<best)){best=yy;bx=X;}}if(best>0&&best<H*0.93)pAv.per.push({x:bx,y:best+1,s:ps,f:R()<0.5?-1:1,ph:R()*9});}
+ if(pAv.per.length>(pPort?3:5))pAv.per.splice(1,1);pAv.nr=pAv.per.length;
+ const qy=pRv0+pRvH+1;[pPort?0.2:0.24,pPort?0.6:0.57].forEach(fx=>pAv.per.push({x:W*fx,y:qy,s:ps*0.82,f:R()<0.5?-1:1,ph:R()*9}));
+ pAv.spw=[0,1,2].map(i=>({x0:W*(pPort?0.74:0.7)+i*ps*1.4,A:W*(pPort?0.14:0.09),ph:i*2.7+R()*3,s:ps*0.5}));
+ // swan sprites (day, night), single and the heart-necked pair
+ const Ls=U*(pPort?0.033:0.03);pAv.L=Ls;
+ const swan=(g,cx,wl,L,f,dn,heart)=>{g.save();g.translate(cx,wl);g.scale(f,1);
+  const bq=g.createLinearGradient(0,-L*0.45,0,0);bq.addColorStop(0,dn?'#ffffff':'#ece8fa');bq.addColorStop(1,dn?'#d5dbe3':'#a9a3c8');g.fillStyle=bq;
+  g.beginPath();g.moveTo(-L*0.62,-L*0.3);g.quadraticCurveTo(-L*0.3,-L*0.22,-L*0.1,-L*0.4);g.quadraticCurveTo(L*0.12,-L*0.45,L*0.3,-L*0.2);g.quadraticCurveTo(L*0.36,-L*0.06,L*0.26,0);g.lineTo(-L*0.42,0);g.quadraticCurveTo(-L*0.55,-L*0.1,-L*0.62,-L*0.3);g.fill();
+  g.strokeStyle=dn?'rgba(150,160,180,0.55)':'rgba(120,110,170,0.55)';g.lineWidth=Math.max(1,L*0.018);g.beginPath();g.moveTo(-L*0.45,-L*0.2);g.quadraticCurveTo(-L*0.15,-L*0.32,L*0.15,-L*0.17);g.moveTo(-L*0.36,-L*0.12);g.quadraticCurveTo(-L*0.1,-L*0.22,L*0.1,-L*0.1);g.stroke();
+  g.strokeStyle=dn?'#fbfbf8':'#e4e0f6';g.lineWidth=L*0.085;g.lineCap='round';g.beginPath();let hx,hy,bxx,byy;
+  if(!heart){g.moveTo(L*0.24,-L*0.18);g.bezierCurveTo(L*0.5,-L*0.42,L*0.12,-L*0.62,L*0.3,-L*0.86);hx=L*0.35;hy=-L*0.87;bxx=L*0.52;byy=-L*0.8;}
+  else{g.moveTo(L*0.24,-L*0.18);g.bezierCurveTo(L*0.62,-L*0.5,L*0.02,-L*1.02,L*0.38,-L*0.98);hx=L*0.42;hy=-L*0.95;bxx=L*0.5;byy=-L*0.82;}
+  g.stroke();g.fillStyle=dn?'#ffffff':'#ece8fa';g.beginPath();g.ellipse(hx,hy,L*0.075,L*0.06,heart?0.6:0.25,0,6.283);g.fill();
+  g.fillStyle=dn?'#e8742a':'#c99a52';g.beginPath();g.moveTo(hx+L*0.03,hy-L*0.03);g.lineTo(bxx,byy);g.lineTo(hx+L*0.02,hy+L*0.04);g.fill();g.fillStyle='#222';g.beginPath();g.arc(hx+L*0.035,hy-L*0.005,Math.max(0.6,L*0.022),0,6.283);g.fill();
+  if(!dn){g.globalCompositeOperation='lighter';g.strokeStyle='rgba(255,205,120,0.35)';g.lineWidth=Math.max(1,L*0.02);g.beginPath();g.moveTo(-L*0.1,-L*0.41);g.quadraticCurveTo(L*0.12,-L*0.46,L*0.3,-L*0.2);g.stroke();g.globalCompositeOperation='source-over';}
+  g.restore();};
+ for(const dn of [0,1]){const w=Math.ceil(Ls*1.3),h=Math.ceil(Ls*1.05),k=pCv(w,h);swan(k.getContext('2d'),w*0.5-Ls*0.02,h-1,Ls,1,dn,false);pAv.sw[dn]=k;
+  const w2=Math.ceil(Ls*2.1),k2=pCv(w2,h),g2=k2.getContext('2d');swan(g2,w2/2-Ls*0.47,h-1,Ls,1,dn,true);swan(g2,w2/2+Ls*0.47,h-1,Ls,-1,dn,true);pAv.hs[dn]=k2;}
+}
+function pAvPrep(dn,L){if(!pAv||pAv.k!==W+'x'+H)pAvInit(L);pAvRom();const ko=[],p=U*0.012,add=(a,b,c,d)=>ko.push([a-p,b-p,c+p,d+p]);
+ add(pBlk[0],pBlk[1],pBlk[2],pBlk[3]);if(pPort)add(0,0,W,pBlk[3]);
+ if(pLv.banner){const B=pBnBox();add(B.cx-B.maxW/2,B.y0,B.cx+B.maxW/2,B.y1+U*0.02);}
+ if(pBalBox)add(...pBalBox);
+ if(pNoteCv&&pLv.note){const nw=pNoteCv.width,nh=pNoteCv.height,ny=H*(pPort?0.955:0.965)-nh;add(pCX-nw/2,ny,pCX+nw/2,ny+nh);}
+ for(const lm of pLandmarks()){const r=U*0.045;add(lm.x-r,lm.y-r*1.5,lm.x+r,lm.y+r);if(lm.scene==='eiffel'){add(lm.x-r,lm.ry-r*1.3,lm.x+r,lm.ry+r*1.1);add(lm.x-pS*14,lm.y,lm.x+pS*14,pFY-118*pS);}}
+ pAv.ko=ko;}
+function pAvKO(px,py){let a=1;const m=U*0.035;for(const r of pAv.ko){const dx=Math.max(r[0]-px,0,px-r[2]),dy=Math.max(r[1]-py,0,py-r[3]);if(dx<m&&dy<m){const dd=Math.hypot(dx,dy);if(dd<m){a=Math.min(a,dd/m);if(a<=0)return 0;}}}return a;}
+// sky birds, drawn behind the landmarks
+function pAvSky(dn,L){pAvPrep(dn,L);const yT=pPort?pBlk[3]+U*0.03:H*0.08,yB=pFY-U*0.05,bh=yB-yT;x.globalCompositeOperation='source-over';x.lineCap='round';
+ // distant flock (the original five, now kept clear of the text/balloon)
+ if(dn){const cyc=pT%24;if(cyc<14){const k=cyc/14,bx0=-W*0.15+k*W*1.3,by0=H*(0.3+0.06*Math.sin(Math.floor(pT/24)*2.1));x.strokeStyle='rgba(45,55,75,0.75)';x.lineWidth=Math.max(1.2,U*0.0022);for(let i=0;i<5;i++){const bx=bx0-i*U*0.035+Math.sin(i*2.3)*U*0.01,by=by0+Math.abs(i-1.5)*U*0.018+Math.sin(pT*0.7+i)*U*0.006,ws=U*0.011,fl=Math.sin(pT*9+i*1.7)*ws*0.6,a=pAvKO(bx,by);if(a<=0)continue;x.globalAlpha=a;x.beginPath();x.moveTo(bx-ws,by-fl);x.quadraticCurveTo(bx-ws*0.4,by-fl*0.3-ws*0.2,bx,by);x.quadraticCurveTo(bx+ws*0.4,by-fl*0.3-ws*0.2,bx+ws,by-fl);x.stroke();}x.globalAlpha=1;}}
+ // swallows: small, fast, forked tails (daytime only)
+ if(dn){const s=U*(pPort?0.012:0.0105);x.fillStyle='#1c2340';for(let i=0;i<3;i++){const cy=46+i*13,tc=(pT+i*17)%cy;if(tc>cy*0.7)continue;const env=Math.min(1,tc/1.5,(cy*0.7-tc)/1.5),t=pT*(1+i*0.13)+i*40,P=t=>[W*(0.5+0.44*Math.sin(0.23*t+i*2.1)+0.07*Math.sin(1.31*t+i)),yT+bh*(0.62+0.2*Math.sin(0.41*t+i*1.3)+0.12*Math.sin(1.7*t+i*0.7))],[px,py]=P(t),[qx,qy]=P(t+0.05),a=pAvKO(px,py)*env;if(a<=0.02)continue;
+  const fl=Math.sin(pT*24+i*2)*0.5+0.5;x.save();x.translate(px,py);x.rotate(Math.atan2(qy-py,qx-px));x.globalAlpha=a*0.92;x.beginPath();x.ellipse(0,0,s*0.55,s*0.15,0,0,6.283);x.fill();
+  for(const sd of [-1,1]){x.beginPath();x.moveTo(s*0.2,0);x.quadraticCurveTo(-s*0.05,sd*s*(0.55+0.35*fl),-s*0.75,sd*s*(1.05+0.2*fl));x.quadraticCurveTo(-s*0.2,sd*s*0.3,-s*0.22,0);x.fill();}
+  x.beginPath();x.moveTo(-s*0.4,-s*0.06);x.lineTo(-s*1.1,-s*0.32);x.lineTo(-s*0.75,0);x.lineTo(-s*1.1,s*0.32);x.lineTo(-s*0.4,s*0.06);x.fill();x.fillStyle='#b4553a';x.beginPath();x.arc(s*0.45,0,s*0.09,0,6.283);x.fill();x.fillStyle='#1c2340';x.restore();}x.globalAlpha=1;}
+ // white doves: a pair gliding now and then (more often on romantic days); at night a rare moonlit dove
+ {const per=dn?(pAv.rom?24:40):95,dur=dn?16:18,cyc=Math.floor(pT/per),t=pT%per,busy=pLv.bu>=4&&(pT%26)<13;if(t<dur&&!busy){const k=t/dur,dir=cyc%2?1:-1,fx=dir>0?-W*0.1+k*W*1.2:W*1.1-k*W*1.2,fy=yT+bh*(0.3+0.12*Math.sin(cyc*1.9))-k*bh*0.05,n=dn?(pAv.rom&&cyc%2?3:2):1,s=U*(pPort?0.02:0.016);
+  for(let i=0;i<n;i++){const bx=fx-dir*i*s*3.2,by=fy+(i%2?s*1.4:0)+Math.sin(pT*0.9+i*2)*s*0.4,a=pAvKO(bx,by);if(a<=0)continue;const ph=(pT*0.9+i*0.35)%3.2,flap=ph<1.3,w=flap?0.25+0.75*Math.sin(ph/1.3*Math.PI*4):0.6;
+   x.save();x.translate(bx,by);x.scale(dir,1);x.globalAlpha=a*(dn?0.97:0.55);if(!dn){x.globalCompositeOperation='lighter';x.drawImage(pGl,-s*1.6,-s*1.6,s*3.2,s*3.2);x.globalCompositeOperation='source-over';}x.fillStyle=dn?'#ffffff':'rgba(235,232,250,0.95)';x.strokeStyle='rgba(150,160,185,0.55)';x.lineWidth=Math.max(1,s*0.05);
+   x.beginPath();x.moveTo(-s*0.5,-s*0.04);x.lineTo(-s*1.2,-s*0.3);x.quadraticCurveTo(-s*1.34,0,-s*1.2,s*0.26);x.lineTo(-s*0.5,s*0.06);x.closePath();x.fill();x.beginPath();x.ellipse(0,0,s*0.65,s*0.24,-0.05,0,6.283);x.fill();x.beginPath();x.arc(s*0.62,-s*0.12,s*0.17,0,6.283);x.fill();x.fillStyle='#e6a37c';x.beginPath();x.moveTo(s*0.76,-s*0.14);x.lineTo(s*0.92,-s*0.08);x.lineTo(s*0.75,-s*0.06);x.fill();
+   x.fillStyle=dn?'#fbfbff':'rgba(240,238,252,0.95)';for(const sd of [1,0]){const ww=w*(sd?0.8:1),ty=-s*(0.15+1.25*ww),tx=-s*(0.25+0.35*sd);x.fillStyle=sd?(dn?'#e9edf4':'rgba(215,212,235,0.9)'):(dn?'#ffffff':'rgba(242,240,253,0.97)');x.beginPath();x.moveTo(s*0.3,-s*0.08);x.quadraticCurveTo(s*0.05,ty*0.75,tx,ty);x.quadraticCurveTo(tx-s*0.15,ty*0.55,-s*0.45,-s*0.02);x.closePath();x.fill();if(dn&&!sd){x.beginPath();x.moveTo(tx,ty);x.quadraticCurveTo(tx-s*0.15,ty*0.55,-s*0.45,-s*0.02);x.stroke();}}
+   x.restore();}x.globalAlpha=1;}}
+}
+// swans on the Seine: lane 0 is behind the boats, lane 1 in front
+function pAvSwans(dn,lane){if(!pAv)return;const sp=pAv.sw[dn],L=pAv.L;if(!sp)return;x.save();x.beginPath();x.rect(0,pRv0,W,pRvH);x.clip();
+ const one=(X,y,sc,f,img,al)=>{const a=pAvKO(X,y-L*0.4*sc);if(a<=0)return;const w=img.width*sc,h=img.height*sc;x.globalAlpha=a*al;
+  x.strokeStyle=dn?'rgba(255,255,255,0.55)':'rgba(255,215,150,0.32)';x.lineWidth=Math.max(1,U*0.0011);x.beginPath();for(let k=0;k<2;k++){const ww=L*sc*(0.5+k*0.45),sp2=L*sc*(0.05+k*0.06);x.moveTo(X-f*L*sc*0.35,y);x.quadraticCurveTo(X-f*(L*sc*0.35+ww*0.5),y+sp2*0.5,X-f*(L*sc*0.35+ww),y+sp2);x.moveTo(X-f*L*sc*0.35,y);x.quadraticCurveTo(X-f*(L*sc*0.35+ww*0.5),y-sp2*0.15,X-f*(L*sc*0.35+ww),y-sp2*0.35);}x.stroke();
+  const rp=(pT*0.6)%1;x.globalAlpha=a*al*(1-rp)*0.5;x.beginPath();x.ellipse(X,y+L*sc*0.02,L*sc*(0.45+rp*0.35),L*sc*(0.05+rp*0.04),0,0,6.283);x.stroke();
+  x.save();x.translate(X,y);x.scale(f,1);x.globalAlpha=a*al*(dn?0.22:0.3);x.save();x.scale(1,-0.45);x.drawImage(img,-w/2,-h*0.02,w,h);x.restore();x.globalAlpha=a*al;x.rotate(Math.sin(pT*0.8+X*0.01)*0.02);x.drawImage(img,-w/2,-h,w,h);x.restore();};
+ const al=dn?1:0.7,bob=t=>Math.sin(pT*1.1+t)*U*0.0008;
+ if(lane===0){const per=170,u=(pT+60)%per/per*1.25;if(u<1){const X=W+L-u*(W+L*2);one(X,pRv0+pRvH*0.36+bob(1),0.72,-1,sp,al*(dn?0.95:0.8));}}
+ else{if(pAv.heart){one(W*(pPort?0.25:0.2)+Math.sin(pT*0.07)*U*0.02,pRv0+pRvH*0.86+bob(2),1,1,pAv.hs[dn],al);}
+  else{const per=150,cyc=Math.floor((pT+20)/per),u=((pT+20)%per)/per*1.3;if(u<1){const X=-L*1.5+u*(W+L*4),y=pRv0+pRvH*0.88;one(X,y+bob(3),1,1,sp,al);if(dn&&(pAv.rom||cyc%2===0))one(X-L*1.25,y+pRvH*0.02+bob(4),0.94,1,sp,al);}}}
+ x.globalAlpha=1;x.restore();}
+// gulls: lazy wide-winged flaps over the Seine near the water (daytime)
+function pAvGulls(dn){if(!pAv||!dn)return;const s=U*(pPort?0.02:0.017);x.lineCap='round';x.lineJoin='round';
+ for(let i=0;i<2;i++){const per=34+i*11,t=(pT+i*19)%per,dur=per*0.75;if(t>dur)continue;const k=t/dur,dir=i?-1:1,X=dir>0?-s*2+k*(W+s*4):W+s*2-k*(W+s*4),Y=pRv0-U*0.012+pRvH*(0.1+0.12*i)+Math.sin(pT*0.6+i*2)*U*0.008,a=pAvKO(X,Y);if(a<=0)continue;
+  const ph=(pT*0.55+i)%2.4,f=ph<1.2?Math.sin(ph/1.2*Math.PI*3):0.25;x.save();x.translate(X,Y);x.scale(dir,1);x.globalAlpha=a*0.95;
+  x.fillStyle='#fdfdfb';x.beginPath();x.ellipse(0,0,s*0.42,s*0.11,0,0,6.283);x.fill();x.beginPath();x.arc(s*0.38,-s*0.05,s*0.1,0,6.283);x.fill();x.fillStyle='#f1b43a';x.fillRect(s*0.46,-s*0.06,s*0.12,Math.max(1,s*0.04));
+  const e=-s*(0.18+0.35*f),tip=-s*(0.05+0.6*f);x.strokeStyle='#c9ced6';x.lineWidth=Math.max(1.2,s*0.11);x.beginPath();x.moveTo(-s*1.05,tip);x.quadraticCurveTo(-s*0.6,e-s*0.12,-s*0.45,e);x.quadraticCurveTo(-s*0.2,e*0.4,0,-s*0.02);x.quadraticCurveTo(s*0.1,e*0.4,s*0.15,e);x.quadraticCurveTo(s*0.25,e-s*0.1,s*0.7,tip);x.stroke();
+  x.strokeStyle='#2b2d33';x.lineWidth=Math.max(1.2,s*0.09);x.beginPath();x.moveTo(-s*1.05,tip);x.lineTo(-s*0.88,tip+(e-tip)*0.35);x.moveTo(s*0.7,tip);x.lineTo(s*0.56,tip+(e-tip)*0.35);x.stroke();x.restore();}x.globalAlpha=1;}
+// perched pigeons (head bobs, an occasional flutter) + hopping sparrows; drawn over the near rooftops
+function pAvPig(px,py,s,f,bob,dn,fly){x.save();x.translate(px,py);x.scale(f,1);const B=dn?'#9aa2b2':'#3b4058',D=dn?'#3f4556':'#2a2e44',Wg=dn?'#b9bfca':'#454b66';x.shadowColor=dn?'rgba(30,35,50,0.55)':'rgba(0,0,0,0)';x.shadowBlur=dn?Math.max(1,s*0.25):0;
+ x.fillStyle=D;x.beginPath();x.moveTo(-s*0.55,-s*0.62);x.lineTo(-s*1.35,-s*0.5);x.lineTo(-s*1.3,-s*0.3);x.lineTo(-s*0.45,-s*0.36);x.fill();
+ x.fillStyle=B;x.beginPath();x.ellipse(0,-s*0.55,s*(fly||!dn?0.8:0.75),s*(dn?0.4:0.47),dn&&!fly?-0.15:0,0,6.283);x.fill();
+ if(fly){const w=Math.sin(pT*20);x.fillStyle=Wg;for(const sd of [0,1]){x.beginPath();x.moveTo(s*0.25,-s*0.65);x.quadraticCurveTo(-s*0.2,-s*(0.7+1.1*w*(sd?0.8:1)),-s*0.75,-s*(0.6+1.3*w*(sd?0.8:1)));x.lineTo(-s*0.35,-s*0.5);x.fill();}}
+ else{x.fillStyle=Wg;x.beginPath();x.ellipse(-s*0.15,-s*0.62,s*0.52,s*0.24,-0.1,0,6.283);x.fill();if(dn){x.fillStyle=D;x.fillRect(-s*0.4,-s*0.62,s*0.08,s*0.2);x.fillRect(-s*0.22,-s*0.62,s*0.08,s*0.2);}}
+ const hx=s*(dn?0.62:0.5)+bob*s*0.3,hy=-s*(dn?1.02:0.88)+bob*s*0.35;x.fillStyle=dn?'#5f9182':'#3f5a63';x.beginPath();x.ellipse(s*0.46,-s*0.8,s*0.26,s*0.28,0,0,6.283);x.fill();
+ x.fillStyle=dn?'#7e8697':'#3b4058';x.beginPath();x.arc(hx,hy,s*0.22,0,6.283);x.fill();x.fillStyle=dn?'#d8cba8':'#6d6a73';x.beginPath();x.moveTo(hx+s*0.18,hy-s*0.04);x.lineTo(hx+s*0.38,hy+s*0.04);x.lineTo(hx+s*0.17,hy+s*0.07);x.fill();
+ if(dn){x.fillStyle='#e08a3c';x.fillRect(hx+s*0.04,hy-s*0.07,Math.max(1,s*0.08),Math.max(1,s*0.08));}else{x.strokeStyle='rgba(200,205,245,0.35)';x.lineWidth=Math.max(1,s*0.07);x.beginPath();x.ellipse(0,-s*0.55,s*0.75,s*0.47,0,Math.PI*1.1,Math.PI*1.9);x.stroke();}
+ if(!fly&&dn){x.strokeStyle='#c46a5e';x.lineWidth=Math.max(1,s*0.07);x.beginPath();x.moveTo(-s*0.05,-s*0.2);x.lineTo(-s*0.05,0);x.moveTo(s*0.12,-s*0.2);x.lineTo(s*0.12,0);x.stroke();}
+ x.restore();}
+function pAvPerch(dn){if(!pAv)return;const P=pAv.per,n=P.length;if(!n)return;x.globalAlpha=1;x.globalCompositeOperation='source-over';
+ const cyc=Math.floor(pT/13),tc=pT%13,fj=dn&&pAv.nr&&tc>4&&tc<7.2?(cyc*7+3)%pAv.nr:-1;
+ for(let i=0;i<n;i++){const p=P[i];let X=p.x,Y=p.y,f=p.f,fly=false,bob=0;
+  if(i===fj){const k=(tc-4)/3.2,dir=(cyc%2?1:-1),A=U*0.07,hh=U*0.06;X=p.x+dir*A*Math.sin(Math.PI*k);Y=p.y-hh*Math.pow(Math.sin(Math.PI*k),0.7);f=Math.cos(Math.PI*k)*dir>=0?1:-1;fly=k>0.05&&k<0.95;}
+  else if(dn){const c=(pT*0.55+p.ph)%4.5;bob=c<0.7?Math.sin(c/0.7*Math.PI):Math.sin(pT*3+p.ph)*0.12;if(((pT*0.05+p.ph)|0)%3===0)f=-p.f;}
+  const a=pAvKO(X,Y-p.s);if(fly?a<=0:a<1)continue;x.globalAlpha=fly?a:1;pAvPig(X,Y,p.s,f,bob,dn,fly);}
+ x.globalAlpha=1;
+ if(dn){const qy=pRv0+pRvH+1,tri=u=>2*Math.abs(u-Math.floor(u+0.5));for(const b of pAv.spw){const T=pT+b.ph,nn=Math.floor(T/1.1),fr=T/1.1-nn,pa=b.x0+b.A*tri(nn/9),pb=b.x0+b.A*tri((nn+1)/9),hop=fr<0.28,k=hop?fr/0.28:1,X=pa+(pb-pa)*k,Y=qy-(hop?Math.sin(Math.PI*k)*b.s*1.6:0),f=pb>=pa?1:-1,s=b.s,pk=!hop&&fr>0.55&&fr<0.75;if(pAvKO(X,Y-s)<1)continue;
+  x.save();x.translate(X,Y);x.scale(f,1);x.fillStyle='#8a6847';x.beginPath();x.ellipse(0,-s*0.75,s*0.8,s*0.5,-0.2,0,6.283);x.fill();x.fillStyle='#5e4430';x.beginPath();x.moveTo(-s*0.6,-s*0.85);x.lineTo(-s*1.4,-s*1.05);x.lineTo(-s*1.3,-s*0.7);x.fill();x.fillStyle='#cdbfa6';x.beginPath();x.ellipse(s*0.15,-s*0.55,s*0.5,s*0.28,0,0,6.283);x.fill();
+  const hx=s*0.65,hy=pk?-s*0.7:-s*1.15;x.fillStyle='#6b4e36';x.beginPath();x.arc(hx,hy,s*0.36,0,6.283);x.fill();x.fillStyle='#e9dfcc';x.beginPath();x.arc(hx+s*0.05,hy+s*0.1,s*0.17,0,6.283);x.fill();x.fillStyle='#3a2c20';x.beginPath();x.moveTo(hx+s*0.3,hy-s*0.05);x.lineTo(hx+s*0.6,hy+s*0.05);x.lineTo(hx+s*0.3,hy+s*0.12);x.fill();
+  if(!hop){x.strokeStyle='#5e4430';x.lineWidth=Math.max(1,s*0.12);x.beginPath();x.moveTo(0,-s*0.3);x.lineTo(0,0);x.stroke();}x.restore();}}}
+
 // ---------- hot air balloon with today's date sign (both modes) ----------
 function pBalInit(){const r=pBalR=Math.max(U*(pPort?0.046:0.042),20),top=pBlk[3]+r*0.3,bot=pBY-r*0.5,need=r*3.6;
  pBalY=pPort?Math.max(pBlk[3]-r*0.6+r*1.05,Math.min((bot-top>need?top+(bot-top-need)*0.15:top)+r*1.05,pBY-r*3.45)):H*0.4;pBalSg=[null,null];
@@ -743,7 +836,7 @@ function pBalSign(dn){const r=pBalR,fs=Math.max(U*0.024,13),t=pBalLb||'',m=pCv(4
 function pBalAlt(bx,wid,sgH){const r=pBalR;if(pPort)return Math.max(pBlk[3]-r*0.75+r*1.1,Math.min(pBalY,pBY-(r*1.96+sgH)-r*0.6));let tY=pBY;if(pScene==='notredame'){const q=Math.min(1,Math.max(0,(U*0.2-Math.abs(bx-pNDsx))/(U*0.12))),qq=q*q*(3-2*q);tY=pNDtop+(pBY-pNDtop)*qq;}const yh=Math.max(r*1.25,tY-(r*1.96+sgH)-r*0.9),d=Math.max(0,Math.abs(bx-(pScene==='notredame'?pNDcx:pCX))-pBHW),z=Math.min(1,Math.max(0,(wid+U*0.24-d)/(U*0.2))),sm=z*z*(3-2*z);return pBalY+(yh-pBalY)*sm;}
 function pBalDraw(dn){const sp=pBalSp[dn];if(!sp)return;const sg=pBalSg[dn]||pBalSign(dn),r=pBalR,wid=Math.max(sp.width,sg.width)/2+r*0.2,per=50;
  const p=pBalFix>=0?pBalFix:((pT+per*0.3)/per)%1,bx=-wid+p*(W+wid*2),by=pBalAltG(bx,wid,sg.height)+Math.sin(pT*0.45)*r*0.18,a=Math.sin(pT*0.33)*0.035;
- x.save();x.translate(bx,by);x.rotate(a);x.globalAlpha=1;x.globalCompositeOperation='source-over';
+ pBalBox=[bx-wid,by-r*1.3,bx+wid,by+r*2.05+sg.height]; x.save();x.translate(bx,by);x.rotate(a);x.globalAlpha=1;x.globalCompositeOperation='source-over';
  x.save();x.rotate(-a*0.6);x.drawImage(sg,-sg.width/2,r*1.96);x.restore();
  x.drawImage(sp,-sp.width/2,-r*1.1);
  const ft=pT%7,fl=ft<1.1?Math.min(1,ft*5,(1.1-ft)*4)*(0.75+0.25*Math.sin(pT*40)):0;
