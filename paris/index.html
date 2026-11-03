@@ -232,7 +232,7 @@ function pLiveUpd(){const d=pNow(),key=pYmd(d)+(pMix>=0.5?'d':'n');if(key===pLv.
  if(mo===11||mo<=1)L.fx.push('snow');else if(mo<=4)L.fx.push('petal');else if(mo<=7){L.fx.push(night?'ff':'warm');}else L.fx.push('leaf');
  // anniversary / wedding
  const wd=pDayNo(new Date(WEDDING_Y,WEDDING_M,WEDDING_D))-pDayNo(d);
- if(wd>0)L.sub=`${wd} day${wd===1?'':'s'} until we say I do`;
+ if(wd>0){const SL=['Counting down to forever \u2665','Almost Mrs. Fitzgerald \u2665','Every day brings me closer to you \u2665','Bear \u2665 Honeybee, forever soon','The best is yet to come \u2665','Paris is waiting for us \u2665','Soon you\u2019ll be my wife, Bee \u2665'];L.sub=SL[((pDayNo(d)%SL.length)+SL.length)%SL.length];}
  else if(wd===0){L.sub='Today we say I do \u2665';L.banner='Today we say I do \u2665';L.fx.push('rose');}
  else if(mo===WEDDING_M&&dt===WEDDING_D){const yn=d.getFullYear()-WEDDING_Y;L.banner=`Happy Anniversary, Mrs. Fitzgerald \u2665 Year ${yn}`;L.sub=`Happy Anniversary, Mrs. Fitzgerald \u2665 Year ${yn}`;L.fx.push('rose');}
  // holidays
