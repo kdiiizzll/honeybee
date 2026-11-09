@@ -225,8 +225,22 @@ function pNDBuild(R){const TW=122,sN=Math.min(H*(pPort?0.29:0.5)/97,W*(pPort?0.7
   g.strokeStyle=HI;g.lineWidth=lw;g.beginPath();for(let xm=t0+0.2;xm<t0+14.3;xm+=0.9){ln(xm,68.7,xm+0.45,69.6);ln(xm+0.45,69.6,xm+0.9,68.7);}g.stroke();
   g.fillStyle=ST;for(const px of [t0+0.6,t0+13.9]){poly([[px-0.6,69],[px,71.4],[px+0.6,69]]);g.fill();}}
  // Ile de la Cite: trees along the quay, then the stone quay wall (full width)
- {const trees=(x0,x1,h0,h1)=>{for(let xm=x0;xm<x1;xm+=2.2+R()*1.6){const hh=h0+R()*(h1-h0),rr=2.4+R()*1.8,cx=X(xm),cy=Y(hh-rr*0.6);const q=g.createRadialGradient(cx-rr*s*0.3,cy-rr*s*0.4,rr*s*0.1,cx,cy,rr*s*1.2);
-   if(N){q.addColorStop(0,'#3a3a2a');q.addColorStop(1,'#0f1220');}else{q.addColorStop(0,'#8fae6a');q.addColorStop(0.6,'#5e7f45');q.addColorStop(1,'#3f5a33');}g.fillStyle=q;g.beginPath();g.ellipse(cx,cy,rr*s*1.15,rr*s,0,0,6.283);g.fill();}};
+ {const trees=(x0,x1,h0,h1)=>{for(let xm=x0;xm<x1;xm+=2.2+R()*1.6){let hh=h0+R()*(h1-h0),rr=2.4+R()*1.8,cm=hh-rr*0.6;if(cm-rr*0.85<1.3){rr*=0.85;cm=1.3+rr*0.85;}
+   const r2=pRng((xm*977+13)|0),cx=X(xm),cy=Y(cm),R0=rr*s*1.15,tw=(0.7+r2()*0.3)*s,lean=(r2()-0.5)*0.4*s,gy=Y(0),fy=cy+R0*0.35,bx=cx+lean;
+   // trunk with plane-tree bark patches
+   let q=g.createLinearGradient(cx-tw,0,cx+tw,0);if(N){q.addColorStop(0,'#2e2433');q.addColorStop(1,'#110d18');}else{q.addColorStop(0,'#9a8462');q.addColorStop(0.55,'#6e5a42');q.addColorStop(1,'#4a3b2b');}
+   g.fillStyle=q;g.beginPath();g.moveTo(cx-tw*0.62,gy+1);g.quadraticCurveTo(cx-tw*0.4,gy-tw*0.4,cx-tw*0.34+lean*0.5,(gy+fy)/2);g.lineTo(bx-tw*0.3,fy);g.lineTo(bx+tw*0.3,fy);g.lineTo(cx+tw*0.34+lean*0.5,(gy+fy)/2);g.quadraticCurveTo(cx+tw*0.4,gy-tw*0.4,cx+tw*0.62,gy+1);g.closePath();g.fill();
+   for(let k=0;k<4;k++){const my=gy+(fy-gy)*(0.15+0.7*r2()),mx=cx+lean*((gy-my)/Math.max(1,gy-fy))+(r2()-0.6)*tw*0.4,mr=tw*(0.08+r2()*0.1);if(!N){g.fillStyle=k%2?'rgba(214,204,170,0.6)':'rgba(120,110,80,0.45)';g.beginPath();g.ellipse(mx,my,mr,mr*1.6,0,0,6.283);g.fill();}}
+   // back of the crown (shadowed clumps)
+   const cl=[],n=7+(r2()*3|0);for(let k=0;k<n;k++){const a=r2()*6.283,d=r2()*0.55;cl.push([bx+Math.cos(a)*R0*1.1*d,cy+Math.sin(a)*R0*0.85*d-R0*0.05,R0*(0.38+r2()*0.2)]);}
+   g.fillStyle=N?'#121725':'#466536';for(const c of cl){g.beginPath();g.arc(c[0],c[1]+R0*0.06,c[2],0,6.283);g.fill();}
+   // branches forking up into the crown
+   g.strokeStyle=N?'#1c1622':'#5a4834';g.lineCap='round';const nb=3+(r2()*2|0);for(let k=0;k<nb;k++){const a=-Math.PI/2+(k/(nb-1)-0.5)*2.0+(r2()-0.5)*0.3,L=R0*(0.55+r2()*0.3),ex=bx+Math.cos(a)*L*1.1,ey=fy+Math.sin(a)*L;
+    g.lineWidth=Math.max(1,tw*0.42);g.beginPath();g.moveTo(bx,fy+tw*0.2);g.quadraticCurveTo(bx+(ex-bx)*0.3,fy-(fy-ey)*0.6,ex,ey);g.stroke();
+    g.lineWidth=Math.max(1,tw*0.18);g.beginPath();g.moveTo(ex,ey);g.lineTo(ex+Math.cos(a-0.5)*L*0.3,ey+Math.sin(a-0.5)*L*0.3);g.moveTo(ex,ey);g.lineTo(ex+Math.cos(a+0.5)*L*0.25,ey+Math.sin(a+0.5)*L*0.25);g.stroke();}
+   // front of the crown, lit from the upper left; low clumps left out so the wood shows through
+   for(const c of cl){if(c[1]>cy+R0*0.12&&r2()<0.7)continue;const q2=g.createRadialGradient(c[0]-c[2]*0.4,c[1]-c[2]*0.45,c[2]*0.1,c[0],c[1],c[2]*1.05);if(N){q2.addColorStop(0,'#3a3a2a');q2.addColorStop(1,'#0f1220');}else{q2.addColorStop(0,'#9cbc72');q2.addColorStop(0.55,'#62854a');q2.addColorStop(1,'#42603a');}g.fillStyle=q2;g.beginPath();g.arc(c[0],c[1],c[2]*0.92,0,6.283);g.fill();}
+   for(let k=0;k<20;k++){const a=r2()*6.283,d=Math.sqrt(r2())*R0*0.85,lt=r2()<0.5;if(!N){g.fillStyle=lt?'rgba(196,220,146,0.6)':'rgba(40,70,35,0.45)';g.beginPath();g.arc(bx+Math.cos(a)*d*1.1,cy+Math.sin(a)*d*0.85-R0*0.05,Math.max(1,R0*0.07),0,6.283);g.fill();}}}};
   const lx=Math.max(-16,(M*0.2-bx0)/s),rx=Math.min(TW+18,(W+2*M-M*0.2-bx0)/s);pNDex=[X(lx)-M,X(rx)-M];pNDfc=[X(20.5)-M,pTY+Y(69),X(0)-M,X(41)-M];pNDs=s;trees(lx+3,-1.5,3,9);trees(43,77,7,13);trees(91,rx-3,8,15);trees(-1.5,41,0.5,2.2);
   g.fillStyle=N?vg(-3.5,0,'#2a1d2c','#4a3434'):vg(-3.5,0,'#b5a585','#d3c5a6');poly([[lx,0],[rx,0],[rx-7,-3.5],[lx+7,-3.5]]);g.fill();g.fillStyle=N?'rgba(255,210,150,0.35)':'rgba(255,252,240,0.7)';rect(lx,-0.35,rx,0.15);g.fillStyle=N?'#101626':'#6f8f52';poly([[lx-0.5,0.2],[lx+5,1.6],[rx-5,1.6],[rx+0.5,0.2]]);g.fill();
   g.strokeStyle=N?'rgba(0,0,0,0.25)':'rgba(120,100,75,0.35)';g.lineWidth=1;g.beginPath();for(let xm=lx+7;xm<rx-7;xm+=2.6){ln(xm,-3.5,xm,-0.4);}ln(lx+3.5,-1.9,rx-3.5,-1.9);g.stroke();
@@ -791,7 +805,7 @@ function pBdayBalloons(g,t,info){const dn=info.day;
 
 // ---------- MUSIC: synthesized in-page (Web Audio), no files. Starts on first tap; no mute, no buttons. ----------
 // calm = original musette café waltz (Bear's own tune); wedding = Wagner Bridal Chorus + Pachelbel Canon progression (public domain);
-// bday = "Happy Birthday to You" (public domain). ?music=calm|song1..song5|wedding|bday overrides; ?date= picks by date.
+// bday = "Happy Birthday to You" (public domain). ?music=calm|song1..song9|wedding|bday overrides; ?date= picks by date.
 const PMN=n=>{const m=/^([A-G])(#|b)?(\d)$/.exec(n);return 12*(+m[3]+1)+{C:0,D:2,E:4,F:5,G:7,A:9,B:11}[m[1]]+(m[2]==='#'?1:m[2]==='b'?-1:0);};
 const PMF=m=>440*Math.pow(2,(m-69)/12);
 const PMC={Gm:[55,[0,3,7]],Em:[52,[0,3,7]],Bm:[47,[0,3,7]],D:[50,[0,4,7]],G:[55,[0,4,7]],Cm:[48,[0,3,7]],F7:[53,[0,4,7,10]],Eb:[51,[0,4,7]],A7:[57,[0,4,7,10]],D7:[50,[0,4,7,10]],Am:[57,[0,3,7]],Dm:[50,[0,3,7]],E7:[52,[0,4,7,10]],F:[53,[0,4,7]],C:[48,[0,4,7]],G7:[55,[0,4,7,10]],C7:[48,[0,4,7,10]],Bb:[46,[0,4,7]]};
@@ -809,6 +823,12 @@ const PMS={
  bday:{bpm:92,acc:'box',mv:'box',mel:"G4:.75 G4:.25 A4:1 G4:1 C5:1 B4:3 G4:.75 G4:.25 A4:1 G4:1 D5:1 C5:3 G4:.75 G4:.25 G5:1 E5:1 C5:1 B4:1 A4:2 F5:.75 F5:.25 E5:1 C5:1 D5:1 C5:3 r:5",
   ch:"-:1 C:3 G7:3 G7:1 G7:3 C:3 C:1 C7:3 F:3 F:1 C:2 G7:1 C:3 -:5"}};
 PMS.song1=PMS.calm;
+// more Paris: song6 valse musette, song7 Satie-style piano, song8 gypsy-jazz swing (originals); song9 Au clair de la lune (traditional, public domain)
+Object.assign(PMC,{"GM7": [55, [4, 7, 11]], "DM7": [50, [4, 7, 11]], "Em7": [52, [3, 7, 10]], "F#m": [54, [0, 3, 7]], "Gm": [55, [0, 3, 7]]});
+PMS.song6={"bpm": 168, "acc": "waltz", "mv": "acc", "sv": "gtr", "svv": 0.3, "stab": 0.3, "mel": "E5:1 A5:1 C6:1 B5:.5 A5:.5 G#5:1 A5:1 F5:1 A5:1 D6:1 C6:.5 B5:.5 A5:1 F5:1 E5:1 G#5:1 B5:1 D6:1.5 C6:.5 B5:1 A5:2 E5:1 ^C6:3 E5:1 A5:1 C6:1 E6:.5 D6:.5 C6:1 A5:1 D6:1 F6:1 D6:1 C6:.5 A5:.5 F5:1 D5:1 B4:1 E5:1 G#5:1 B5:.5 A5:.5 G#5:1 D5:1 C5:1 B4:.5 C5:.5 E5:1 *A4:3 G5:1 E5:1 C5:1 G5:1.5 A5:.5 G5:1 F5:1 D5:1 B4:1 F5:1.5 G5:.5 F5:1 D5:.5 E5:.5 F5:1 G5:1 B5:1 A5:.5 G5:.5 F5:1 E5:1 G5:1 C6:1 *E6:3 E5:.5 F5:.5 G5:1 Bb5:1 C6:1 Bb5:1 G5:1 A5:1 C6:1 F6:1 E6:.5 D6:.5 C6:1 A5:1 G5:1 E5:1 C5:1 D5:1 F5:1 B5:1 C6:1 G5:1 E5:1 ^B5:1.5 G#5:.5 E5:1", "ch": "Am:6 Dm:6 E7:6 Am:6 Am:6 Dm:6 E7:6 Am:6 C:6 G7:12 C:6 C7:6 F:6 C:3 G7:3 C:3 E7:3"};
+PMS.song7={"bpm": 72, "acc": "waltz", "mv": "pno", "sv": "pno", "svv": 0.15, "stab": 0.95, "mel": "r:3 r:3 r:1 A5:1 F#5:1 E5:1 D5:1 A4:1 B4:1.5 D5:.5 G5:1 F#5:3 r:1 E5:1 F#5:1 G5:1 A5:1 E5:1 D5:2 B4:1 C#5:3 r:1 A5:1 B5:1 A5:1 F#5:1 D5:1 F#5:1.5 E5:.5 D5:1 C#5:3 r:1 B4:1 D5:1 E5:1 G5:1 C#5:1 D5:3 r:3", "ch": "GM7:3 DM7:3 GM7:3 DM7:3 GM7:3 DM7:3 GM7:3 DM7:3 Em7:3 A7:3 GM7:3 DM7:3 Bm:3 F#m:3 GM7:3 A7:3 DM7:6"};
+PMS.song8={"bpm": 176, "acc": "pompe", "mv": "vln", "sv": "gtr", "svv": 0.34, "stab": 0.25, "gv": "acc", "gvv": 0.35, "mel": "D5:.5 E5:.5 F5:.5 A5:.5 D6:1 A5:1 C#6:.5 D6:.5 A5:.5 F5:.5 D5:2 G5:.5 A5:.5 Bb5:.5 D6:.5 G6:1 D6:1 F6:.5 E6:.5 D6:.5 Bb5:.5 G5:2 A5:.5 C#6:.5 E6:.5 G6:.5 F6:1 E6:1 D6:.5 C#6:.5 Bb5:.5 G5:.5 E5:2 F5:1 A5:1 D6:.5 E6:.5 F6:1 *E6:2 C#6:1 A5:1 D5:.5 E5:.5 F5:.5 A5:.5 D6:1 A5:1 C#6:.5 D6:.5 A5:.5 F5:.5 D5:2 Bb5:1 G5:.5 Bb5:.5 D6:1 G6:1 F6:1 D6:.5 A5:.5 F5:1 D5:1 E5:.5 G5:.5 Bb5:.5 C#6:.5 E6:1 G6:1 F6:.5 E6:.5 D6:.5 C#6:.5 A5:2 D6:1 A5:1 F5:1 E5:1 D5:3 r:1 C5:.5 F5:.5 A5:.5 C6:.5 F6:2 E6:.5 D6:.5 C6:.5 Bb5:.5 G5:2 A5:1 C6:1 A5:.5 G5:.5 F5:1 F#5:1 A5:1 C6:1 D6:1 Bb5:.5 A5:.5 G5:.5 F5:.5 D5:2 C#5:.5 E5:.5 G5:.5 Bb5:.5 ^A5:2 F5:1 E5:1 D5:1 A4:1 C#5:1 E5:1 A5:1 r:1", "ch": "Dm:8 Gm:8 A7:8 Dm:4 A7:4 Dm:8 Gm:4 Dm:4 A7:8 Dm:8 F:4 C7:4 F:4 D7:4 Gm:4 A7:4 Dm:4 A7:4", "glk": "r:28 D5:2 E5:2 r:28 F5:2 E5:2 r:16 C#5:2 E5:2 A5:4 r:8"};
+PMS.song9={"bpm": 100, "acc": "pompe", "mv": "acc", "sv": "pizz", "svv": 0.42, "stab": 0.3, "gv": "cel", "gvv": 0.3, "mel": "C5:1 C5:1 C5:1 D5:1 E5:2 D5:2 C5:1 E5:1 D5:1 D5:1 C5:4 C5:1 C5:1 C5:1 D5:1 E5:2 D5:2 C5:1 E5:1 D5:1 D5:1 C5:4 D5:1 D5:1 D5:1 D5:1 A4:2 A4:2 D5:1 C5:1 B4:1 A4:1 G4:4 C5:1 C5:1 C5:1 D5:1 E5:2 D5:2 C5:1 E5:1 D5:1 D5:1 C5:4", "ch": "C:4 C:2 G7:2 C:2 G7:2 C:4 C:4 C:2 G7:2 C:2 G7:2 C:4 G:4 D7:4 G:2 D7:2 G:4 C:4 C:2 G7:2 C:2 G7:2 C:4", "glk": "r:12 G5:1 E5:1 C6:2 r:12 G5:1 E5:1 C6:2 r:12 B5:1 G5:1 D6:2 r:12 G5:1 E5:1 C6:2"};
 function pMusExp(n){const S=PMS[n],ev=[];let b=0;
  for(const tk of S.mel.split(' ')){let[nm,ds]=tk.split(':'),d=+ds,orn=nm[0]==='^'||nm[0]==='*'?nm[0]:'';if(orn)nm=nm.slice(1);if(nm!=='r'){const m=PMN(nm),up=/#|E|B/.test(nm)?1:2;
    if(S.mv==='box'){ev.push({b,d,k:'box',m:m+12,v:0.9});ev.push({b,d,k:'acc',m,v:0.28});}
@@ -851,10 +871,18 @@ function pMV(ctx,bus,e,t,spb){const d=e.d*spb,f=PMF(e.m),v=e.v,g=ctx.createGain(
  else if(e.k==='pizz'){const o=O('triangle',f),o2=O('sine',f*2),g2=ctx.createGain();g2.gain.value=0.25;o.connect(g);o2.connect(g2);g2.connect(g);os.push(o,o2);dec(0.16*v,0.003,0.22);}
  else if(e.k==='cel'){const o=O('sine',f),o2=O('sine',f*2),o3=O('sine',f*4),g2=ctx.createGain(),g3=ctx.createGain();g2.gain.value=0.3;g3.gain.setValueAtTime(0.15,t);g3.gain.setTargetAtTime(0,t,0.06);o.connect(g);o2.connect(g2);g2.connect(g);o3.connect(g3);g3.connect(g);os.push(o,o2,o3);dec(0.14*v,0.004,1.4);}
  else if(e.k==='vib'){const am=ctx.createGain();am.gain.value=0.75;const lfo=O('sine',5.5),lg=ctx.createGain();lg.gain.value=0.25;lfo.connect(lg);lg.connect(am.gain);am.connect(g);const o=O('sine',f),o2=O('sine',f*4),g2=ctx.createGain();g2.gain.setValueAtTime(0.12,t);g2.gain.setTargetAtTime(0,t,0.1);o.connect(am);o2.connect(g2);g2.connect(am);os.push(o,o2,lfo);dec(0.2*v,0.006,Math.max(1.2,d+0.8));}
+ else if(e.k==='pno'){const o=O('triangle',f),o2=O('sine',f*2),o3=O('sine',f*3.01),g2=ctx.createGain(),g3=ctx.createGain();g2.gain.value=0.28;g3.gain.setValueAtTime(0.12,t);g3.gain.setTargetAtTime(0,t,0.12);o.connect(g);o2.connect(g2);g2.connect(g);o3.connect(g3);g3.connect(g);os.push(o,o2,o3);dec(0.15*v,0.004,Math.max(1.2,d*1.4));}
+ else if(e.k==='vln'){const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=2800;lp.Q.value=0.8;lp.connect(g);const lfo=O('sine',5.6),lg=ctx.createGain();lg.gain.setValueAtTime(0,t);lg.gain.linearRampToValueAtTime(f*0.006,t+Math.min(0.35,d*0.6));lfo.connect(lg);for(const dt of[-4,4]){const o=O('sawtooth',f,dt);lg.connect(o.frequency);o.connect(lp);os.push(o);}os.push(lfo);
+  const pk=0.05*v;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(pk,t+0.05);g.gain.setValueAtTime(pk*0.9,t+Math.max(0.07,d*0.9));g.gain.setTargetAtTime(0,t+Math.max(0.07,d*0.9),0.08);end=t+d+0.6;}
  else if(e.k==='bass'){const o=O('triangle',f),o2=O('sine',f*2),g2=ctx.createGain();g2.gain.value=0.3;o.connect(g);o2.connect(g2);g2.connect(g);os.push(o,o2);dec(0.24*v,0.008,1.1);}
  else{const o=O('triangle',f),o2=O('sine',f*3),g2=ctx.createGain();g2.gain.value=0.12;o.connect(g);o2.connect(g2);g2.connect(g);os.push(o,o2);dec(0.07*v,0.006,0.5);}
  for(const o of os){o.start(t);o.stop(end);}}
-var pMu=null;const PMEV=['song1','song2','song3','song4','song5'];
+// Paris sounds through the same reverb: Notre-Dame bells (on the hour and when she taps the cathedral), the ferry's horn
+function pBell(ctx,bus,t,f,v){const P=[[0.5,0.35,6],[1,1,4],[1.2,0.55,3],[1.5,0.35,2.5],[2,0.4,2],[2.52,0.18,1.5],[3,0.12,1.2],[4.1,0.06,0.8]];for(const [r,a,dc] of P){const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.value=f*r;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.11*v*a,t+0.006);g.gain.setTargetAtTime(0,t+0.006,dc/4);o.connect(g);g.connect(bus);o.start(t);o.stop(t+dc+0.5);}}
+function pBells(n){const M=pMu;if(!M||M.ctx.state!=='running')return;const t=M.ctx.currentTime+0.05,F=[185,233.1,207.7,155.6];for(let i=0;i<n;i++)pBell(M.ctx,M.G.bus,t+i*1.5,F[i%F.length],i?0.8:1);}
+function pHorn(){const M=pMu;if(!M||M.ctx.state!=='running')return;const c=M.ctx,t=c.currentTime+0.02,g=c.createGain(),lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=650;lp.connect(g);g.connect(M.G.bus);const os=[];for(const f of [146.8,184.99]){for(const dt of [-6,6]){const o=c.createOscillator();o.type='sawtooth';o.frequency.value=f;o.detune.value=dt;o.connect(lp);os.push(o);}}
+ g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.1,t+0.12);g.gain.setValueAtTime(0.1,t+1.0);g.gain.setTargetAtTime(0,t+1.0,0.12);for(const o of os){o.start(t);o.stop(t+1.8);}}
+var pMu=null;const PMEV=['song1','song2','song3','song4','song5','song6','song7','song8','song9'];
 function pMusWant(){const q=new URLSearchParams(location.search).get('music');if(q&&PMS[q])return q;const ymd=pYmd(pNow());if(ymd.slice(5)==='11-20')return 'bday';if(ymd.slice(5)==='11-14'&&(+ymd.slice(0,4)>WEDDING_Y||pNow().getTime()>=WEDDING_UTC))return 'wedding';return 'every';}
 // random everyday song, never the same as last time (remembered across opens)
 function pMusRand(not){let last=-1;try{const v=localStorage.getItem('pMusLast');if(v!==null)last=+v;}catch(_){}
@@ -863,7 +891,7 @@ function pMusPlay(n,fade){const M=pMu,ctx=M.ctx,now=ctx.currentTime,S=pMusExp(n)
  if(fade){sg.gain.setValueAtTime(0,t0);sg.gain.linearRampToValueAtTime(gv,t0+3);for(const P of M.ps)if(!P.until){P.until=now+3;const gg=P.sg.gain;gg.cancelScheduledValues(now);gg.setValueAtTime(gg.value,now);gg.linearRampToValueAtTime(0,now+3);}}
  else sg.gain.value=gv;M.ps.push({name:n,ev:S.ev,lb:S.lb,spb:60/S.bpm,org:t0,i:0,lp:0,sg,until:0});M.name=n;}
 function pMusPump(){const M=pMu;if(!M||M.ctx.state!=='running')return;const now=M.ctx.currentTime;
- if(now>M.chk){M.chk=now+1;const w=pMusWant();if(w!==M.want){M.want=w;pMusPlay(w==='every'?pMusRand(M.name):w,true);}}
+ if(now>M.chk){M.chk=now+1;{const nd=pNow();if(nd.getMinutes()===0&&nd.getSeconds()<4&&M.bellH!==nd.getHours()){M.bellH=nd.getHours();pBells(4);}}const w=pMusWant();if(w!==M.want){M.want=w;pMusPlay(w==='every'?pMusRand(M.name):w,true);}}
  const cur=M.ps[M.ps.length-1];if(M.want==='every'&&cur&&cur.lp>=2)pMusPlay(pMusRand(cur.name),true);  // ~2 loops, then crossfade to another song
  for(const P of M.ps){const lim=P.until?Math.min(now+0.5,P.until):now+0.5;
   for(let k=0;k<300;k++){const e=P.ev[P.i],t=P.org+(P.lp*P.lb+e.b)*P.spb;if(t>lim)break;if(t>now-0.05)pMV(M.ctx,P.sg,e,t,P.spb);if(++P.i>=P.ev.length){P.i=0;P.lp++;}}}
@@ -885,7 +913,7 @@ const fsEl=()=>document.fullscreenElement||document.webkitFullscreenElement;
 function enterFS(){const d=document.documentElement;try{const r=d.requestFullscreen?d.requestFullscreen({navigationUI:'hide'}):d.webkitRequestFullscreen?d.webkitRequestFullscreen():null;if(r&&r.catch)r.catch(()=>{});}catch(e){}}
 async function wake(){try{if('wakeLock' in navigator&&document.visibilityState==='visible'&&!wl){wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>{wl=null;});}}catch(e){wl=null;}}
 var pHidAt=0;document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){pHidAt=Date.now();return;}if(started)wake();if(!pOG&&pHidAt&&Date.now()-pHidAt>6e5){const n=pPickScene();if(n!==pScene){pScene=n;init();}}pHidAt=0;});
-function tap(e){e.preventDefault();if(!fsEl())enterFS();if(started){if(pFerBox){const fx=(e.clientX||0)*DPR,fy=(e.clientY||0)*DPR;if(fx>=pFerBox[0]&&fx<=pFerBox[2]&&fy>=pFerBox[1]&&fy<=pFerBox[3])pFerToot=pT;}pTapAt(e);}if(!started){started=true;go.classList.add('hide');pNext=pT+3;wake();setTimeout(()=>go.remove(),1400);}}
+function tap(e){e.preventDefault();if(!fsEl())enterFS();if(started){if(pFerBox){const fx=(e.clientX||0)*DPR,fy=(e.clientY||0)*DPR;if(fx>=pFerBox[0]&&fx<=pFerBox[2]&&fy>=pFerBox[1]&&fy<=pFerBox[3]){pFerToot=pT;pHorn();}}pTapAt(e);}if(!started){started=true;go.classList.add('hide');pNext=pT+3;wake();setTimeout(()=>go.remove(),1400);}}
 addEventListener('pointerup',tap,{passive:false});addEventListener('touchmove',e=>e.preventDefault(),{passive:false});addEventListener('contextmenu',e=>e.preventDefault());addEventListener('gesturestart',e=>e.preventDefault());
 pTgt=pMix=pWantDay();if(pMix)go.classList.add('day');if(pOG){go.remove();started=true;}
 pSceneQ=(qs.get('scene')||'').toLowerCase();pScene=pPickScene();{const ge=parseFloat(qs.get('glideEvery'));if(ge>0)pGlEvery=pGlNext=ge;if(qs.get('glide')==='now'){pGlNow=true;pGlNext=3;}}
@@ -894,10 +922,10 @@ let last=performance.now(),cost=8,cap=0;
 function frame(t){requestAnimationFrame(frame);if(t-last<cap)return;const dt=Math.min((t-last)/1000,0.07);last=t;const a=performance.now();pFrame(dt);pTapDraw(dt);cost=cost*0.95+(performance.now()-a)*0.05;cap=cost>13?31:cost<7?0:cap;}
 requestAnimationFrame(frame);
 // ---------- tap rewards (after opening): hearts wherever she taps; tap the sky = wish on a shooting star; tap the tower/cathedral = it lights up ----------
-var pTapP=[],pTapSp=-1,pTapLast=0,pTapWish=-1;
+var pTapP=[],pTapSp=-1,pTapLast=0,pTapWish=-1,pBellAt=-99;
 function pTapAt(e){const now=performance.now();if(now-pTapLast<140)return;pTapLast=now;const X=(e.clientX||0)*DPR,Y=(e.clientY||0)*DPR;if(!(X>0||Y>0))return;const dn=pMix>=0.5;let hit=null;
  try{for(const l of pLandmarks()){if(l.w<0.5||Y<l.y-U*0.03||Y>l.base)continue;const f=Math.max(0,Math.min(1,(Y-l.y)/Math.max(1,l.base-l.y))),hw=U*0.035+((l.x1-l.x0)/2)*f,spire=Math.abs(X-l.x)<=U*0.035,body=l.scene==='notredame'?X>=l.x0&&X<=l.x1&&f>=0.25:Math.abs(X-l.cx)<=hw;if(spire||body)hit=l;}}catch(_){}
- if(hit){if(!dn&&hit.scene==='eiffel'&&!pGd&&!(pTapSp>=0&&pT-pTapSp<5))pTapSp=pT;pTapBurst(hit.x,hit.y+U*0.03,20,1,dn);}
+ if(hit){if(hit.scene==='notredame'&&!(pBellAt>pT-6)){pBellAt=pT;pBells(3);}if(!dn&&hit.scene==='eiffel'&&!pGd&&!(pTapSp>=0&&pT-pTapSp<5))pTapSp=pT;pTapBurst(hit.x,hit.y+U*0.03,20,1,dn);}
  else{pTapBurst(X,Y,9,0,dn);if(Y<pFY-H*0.06&&!pEv)pTapWish=pT+2;}
  try{if(e.isTrusted&&navigator.vibrate)navigator.vibrate(12);}catch(_){}}
 function pTapBurst(bx,by,n,big,dn){const R=Math.random,cl=dn?['#e0476f','#ff7f9f','#f2a93d','#ffffff']:['#ffd98a','#ff9fb8','#fff1c4','#ffb36b'];if(pTapP.length>110)pTapP.splice(0,pTapP.length-110+n);
