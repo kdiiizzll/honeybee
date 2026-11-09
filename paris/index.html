@@ -375,7 +375,7 @@ function pInit(){const sv=[];for(const d of [0,1]){pD=d;pBuild();const sc={};for
 pCl=[];const R=pRng(77);for(let i=0;i<5;i++){const cw=U*(0.22+R()*0.2),chh=cw*0.42,cv=pCv(cw,chh),g=cv.getContext('2d');g.filter='blur('+Math.max(1,cw*0.03)+'px)';for(let k=0;k<9;k++){const r=chh*(0.16+R()*0.2),cx=cw*(0.18+R()*0.64),cy=chh*(0.5+R()*0.18)-r*0.3;const q=g.createRadialGradient(cx,cy-r*0.3,r*0.1,cx,cy,r);q.addColorStop(0,'rgba(255,255,255,0.95)');q.addColorStop(1,'rgba(236,242,250,0.0)');g.fillStyle=q;g.beginPath();g.arc(cx,cy,r,0,6.283);g.fill();}
  pCl.push({cv,x0:R()*W,y:H*(0.2+R()*0.38),sp:U*(0.006+R()*0.01)});}
 pBuf=pCv(W,H);pBx=pBuf.getContext('2d');pBalInit();pLiveInit();}
-function pFrame(dt){pT+=dt;pTick(dt);pGlStep(dt);const m=pMix;pFrameMain(dt,m);pWxDraw(pMix>=0.5?1:0,dt);}
+function pFrame(dt){pT+=dt;pTick(dt);pGlStep(dt);const m=pMix;pFrameMain(dt,m);pWxDraw(pMix>=0.5?1:0,dt);pTempDraw(pMix>=0.5?1:0);}
 function pFrameMain(dt,m){if(m<1)pDraw(dt,0,true);if(m>0){if(m<1){const x0=x;x=pBx;pDraw(0,1,false);x=x0;x.globalAlpha=m;x.drawImage(pBuf,0,0);x.globalAlpha=1;}else pDraw(dt,1,true);}}
 function pDraw(dt,dn,prim){const L=pL[dn],VIS=pGlVis();x.globalCompositeOperation='source-over';x.globalAlpha=1;x.drawImage(L.bg,0,0);pGolden(dn);pWxSky(dn);pGrowFar(dn);if(pLv.bu>=10||pLv.bu===11)pBuSky(dn);if(pLv.tint)pHolSky(dn);if(pLv.bu===11){const k=pWK();if(k>0){const q=x.createLinearGradient(0,0,0,pFY);q.addColorStop(0,dn?'rgba(255,140,185,0.07)':'rgba(255,100,170,0.09)');q.addColorStop(0.65,dn?'rgba(255,175,160,0.09)':'rgba(255,140,160,0.10)');q.addColorStop(1,dn?'rgba(255,200,110,0.16)':'rgba(255,185,100,0.16)');x.globalAlpha=k;x.fillStyle=q;x.fillRect(0,0,W,pFY);x.globalAlpha=1;}}
 if(dn){for(const c of pCl){const w=c.cv.width,xx=((c.x0+pT*c.sp)%(W+w))-w;x.globalAlpha=0.9;x.drawImage(c.cv,xx,c.y);}x.globalAlpha=1;
@@ -977,6 +977,18 @@ init();
 let last=performance.now(),cost=8,cap=0;
 function frame(t){requestAnimationFrame(frame);if(t-last<cap)return;const dt=Math.min((t-last)/1000,0.07);last=t;const a=performance.now();pFrame(dt);pTapDraw(dt);cost=cost*0.95+(performance.now()-a)*0.05;cap=cost>13?31:cost<7?0:cap;}
 requestAnimationFrame(frame);
+// ---------- LIVE PARIS TEMPERATURE (Open-Meteo, free, no key; only Paris's fixed location is sent). Shown under the sun / moon. ----------
+// refreshes every 15 min; keeps the last reading through a dropped connection; hides when older than 3 h. ?temp=54 fakes it for testing.
+var pTmp={v:null,t:0},pTmpCv=null,pTmpK='';
+function pTempLoad(){try{const o=JSON.parse(localStorage.getItem('pParisTemp')||'null');if(o&&typeof o.v==='number')pTmp=o;}catch(_){}}
+async function pTempFetch(){if(pOG)return;const q=qs.get('temp');if(q!==null){pTmp={v:+q,t:Date.now()};return;}
+ try{const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=48.8566&longitude=2.3522&current=temperature_2m&temperature_unit=fahrenheit',{cache:'no-store'});if(!r.ok)return;const j=await r.json(),v=j&&j.current&&j.current.temperature_2m;
+  if(typeof v==='number'&&isFinite(v)){pTmp={v,t:Date.now()};try{localStorage.setItem('pParisTemp',JSON.stringify(pTmp));}catch(_){}}}catch(_){}}
+function pTempDraw(dn){if(pOG||!pTmp||pTmp.v==null||Date.now()-pTmp.t>3*3600e3)return;const txt='Paris · '+Math.round(pTmp.v)+'°F',key=txt+dn+W;
+ if(key!==pTmpK){pTmpK=key;const fs=Math.round(U*(pPort?0.026:0.025)),m=pCv(4,4).getContext('2d'),font=`italic ${fs}px ${PSF}`;m.font=font;const tw=Math.ceil(m.measureText(txt).width+fs*1.2),th=Math.ceil(fs*1.8);pTmpCv=pCv(tw,th);const g=pTmpCv.getContext('2d');
+  g.font=font;g.textAlign='center';g.textBaseline='middle';g.shadowColor=dn?'rgba(255,255,255,0.95)':'rgba(255,170,60,0.7)';g.shadowBlur=fs*0.45;g.fillStyle=dn?'#2a3f74':'#ffe6b0';g.fillText(txt,tw/2,th/2);}
+ x.save();x.globalAlpha=1;x.globalCompositeOperation='source-over';x.drawImage(pTmpCv,pMX-pTmpCv.width/2,pMY+pMR*1.75);x.restore();}
+pTempLoad();pTempFetch();setInterval(pTempFetch,15*60e3);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&Date.now()-pTmp.t>15*60e3)pTempFetch();});
 // ---------- tap rewards (after opening): hearts wherever she taps; tap the sky = wish on a shooting star; tap the tower/cathedral = it lights up ----------
 var pTapP=[],pTapSp=-1,pTapLast=0,pTapWish=-1,pBellAt=-99;
 function pTapAt(e){const now=performance.now();if(now-pTapLast<140)return;pTapLast=now;const X=(e.clientX||0)*DPR,Y=(e.clientY||0)*DPR;if(!(X>0||Y>0))return;const dn=pMix>=0.5;let hit=null;
