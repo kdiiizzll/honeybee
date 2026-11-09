@@ -892,8 +892,8 @@ requestAnimationFrame(frame);
 // ---------- tap rewards (after opening): hearts wherever she taps; tap the sky = wish on a shooting star; tap the tower/cathedral = it lights up ----------
 var pTapP=[],pTapSp=-1,pTapLast=0,pTapWish=-1;
 function pTapAt(e){const now=performance.now();if(now-pTapLast<140)return;pTapLast=now;const X=(e.clientX||0)*DPR,Y=(e.clientY||0)*DPR;if(!(X>0||Y>0))return;const dn=pMix>=0.5;let hit=null;
- try{for(const l of pLandmarks()){if(l.w<0.5||Y<l.y-U*0.03||Y>l.base)continue;const f=Math.max(0,Math.min(1,(Y-l.y)/Math.max(1,l.base-l.y))),hw=U*0.035+((l.x1-l.x0)/2)*f;if(Math.abs(X-l.cx)<=hw)hit=l;}}catch(_){}
- if(hit){if(!dn&&hit.scene==='eiffel'&&!pGd&&!(pTapSp>=0&&pT-pTapSp<5))pTapSp=pT;pTapBurst(hit.cx,hit.y+U*0.03,20,1,dn);}
+ try{for(const l of pLandmarks()){if(l.w<0.5||Y<l.y-U*0.03||Y>l.base)continue;const f=Math.max(0,Math.min(1,(Y-l.y)/Math.max(1,l.base-l.y))),hw=U*0.035+((l.x1-l.x0)/2)*f,spire=Math.abs(X-l.x)<=U*0.035,body=l.scene==='notredame'?X>=l.x0&&X<=l.x1&&f>=0.25:Math.abs(X-l.cx)<=hw;if(spire||body)hit=l;}}catch(_){}
+ if(hit){if(!dn&&hit.scene==='eiffel'&&!pGd&&!(pTapSp>=0&&pT-pTapSp<5))pTapSp=pT;pTapBurst(hit.x,hit.y+U*0.03,20,1,dn);}
  else{pTapBurst(X,Y,9,0,dn);if(Y<pFY-H*0.06&&!pEv)pTapWish=pT+2;}
  try{if(e.isTrusted&&navigator.vibrate)navigator.vibrate(12);}catch(_){}}
 function pTapBurst(bx,by,n,big,dn){const R=Math.random,cl=dn?['#e0476f','#ff7f9f','#f2a93d','#ffffff']:['#ffd98a','#ff9fb8','#fff1c4','#ffb36b'];if(pTapP.length>110)pTapP.splice(0,pTapP.length-110+n);
