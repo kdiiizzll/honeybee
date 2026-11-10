@@ -432,7 +432,12 @@ function pSunTimes(d){d=d||pNow();const y0=new Date(d.getFullYear(),0,1),doy=(d-
  c=Math.max(-1,Math.min(1,-Math.tan(lat)*Math.tan(dec))),half=Math.acos(c)*12/Math.PI,jan=new Date(d.getFullYear(),0,1).getTimezoneOffset(),jul=new Date(d.getFullYear(),6,1).getTimezoneOffset(),dst=d.getTimezoneOffset()<Math.max(jan,jul)?1:0,noon=11.9+dst;
  return{rise:noon-half,set:noon+half};}
 // golden hour: warm glow low in the sky around sunrise and sunset
-function pGoldenK(){const d=pNow(),h=d.getHours()+d.getMinutes()/60+d.getSeconds()/3600,t=pSunTimes(d),dh=Math.min(Math.abs(h-t.rise),Math.abs(h-t.set));return Math.exp(-Math.pow(dh/0.6,2));}
+// FLORIDA SUN: sunrise/sunset for Central Florida (Orlando, 28.5N 81.4W), worked out in UTC so the phone's own time zone doesn't matter
+function pSunUTC(d){d=d||pNow();const y0=Date.UTC(d.getUTCFullYear(),0,1),doy=(d.getTime()-y0)/864e5,dec=23.44*Math.sin(2*Math.PI*(284+doy)/365)*Math.PI/180,lat=28.5*Math.PI/180,lon=-81.4,B=2*Math.PI*(doy-81)/364,eot=9.87*Math.sin(2*B)-7.53*Math.cos(B)-1.5*Math.sin(B),
+ noon=12-lon/15-eot/60,c=Math.max(-1,Math.min(1,(Math.sin(-0.833*Math.PI/180)-Math.sin(lat)*Math.sin(dec))/(Math.cos(lat)*Math.cos(dec)))),half=Math.acos(c)*12/Math.PI;return{rise:noon-half,set:noon+half};}
+function pUtcH(d){d=d||pNow();return d.getUTCHours()+d.getUTCMinutes()/60+d.getUTCSeconds()/3600;}
+function pWrapH(v){return((v+12)%24+24)%24-12;}
+function pGoldenK(){const h=pUtcH(),t=pSunUTC(),dh=Math.min(Math.abs(pWrapH(h-t.rise)),Math.abs(pWrapH(h-t.set)));return Math.exp(-Math.pow(dh/0.6,2));}
 function pGolden(dn){if(pOG||qs.get('mode'))return;const k=pGoldenK()*(pYearsMarried()>=35?1.35:1);if(k<0.02)return;const q=x.createLinearGradient(0,0,0,pFY);q.addColorStop(0,'rgba(120,80,170,0)');q.addColorStop(0.45,`rgba(255,120,150,${(0.16*k).toFixed(3)})`);q.addColorStop(0.8,`rgba(255,160,90,${(0.32*k).toFixed(3)})`);q.addColorStop(1,`rgba(255,190,110,${(0.42*k).toFixed(3)})`);x.fillStyle=q;x.fillRect(0,0,W,pFY);}
 // weather: a few soft rain days a month, some foggy autumn/winter mornings; never on a day that has its own celebration
 const PWX_RAIN=[0.12,0.1,0.1,0.12,0.12,0.08,0.06,0.06,0.08,0.12,0.12,0.1];
@@ -962,7 +967,7 @@ function pMusStart(){if(pMu){if(pMu.ctx.state==='suspended'&&!document.hidden)pM
 document.addEventListener('visibilitychange',()=>{if(!pMu)return;try{if(document.hidden)pMu.ctx.suspend();else pMu.ctx.resume();}catch(_){}});
 
 // day/night: automatic by local time (day 7:00-18:59), ?mode=day|night for testing; ~3 s crossfade
-function pWantDay(){const qm=qs.get('mode');if(qm==='day')return 1;if(qm==='night')return 0;if(pOG)return 1;const d=pNow(),h=d.getHours()+d.getMinutes()/60+d.getSeconds()/3600,t=pSunTimes(d);return h>=t.rise&&h<t.set?1:0;}
+function pWantDay(){const qm=qs.get('mode');if(qm==='day')return 1;if(qm==='night')return 0;if(pOG)return 1;const h=pUtcH(),t=pSunUTC(),m24=v=>((v%24)+24)%24;return m24(h-t.rise)<m24(t.set-t.rise)?1:0;}
 let pChk=0;function pTick(dt){if((pChk-=dt)<=0){pChk=1;if(started&&!pOG&&pSurN()!==pSurCur)pSurMaybe();if(pSea&&!pOG&&pSeason().key!==pSea.key){init();return;}pTgt=pWantDay();if(pScene!=='eiffel'&&!pSceneQ&&pSceneForced(pNow())){pScene='eiffel';try{localStorage.setItem('pSceneLast','eiffel');}catch(_){}init();}pLiveUpd();let dl=pNow(),lb=dl.toLocaleDateString('en-US',{weekday:'long'})+' • '+dl.toLocaleDateString('en-US',{month:'short'})+' '+dl.getDate()+', '+dl.getFullYear();if(pOG)lb='Bear ♥ Honeybee';if(lb!==pBalLb){pBalLb=lb;pBalSg=[null,null];}}if(pMix!==pTgt){pMix=pTgt>pMix?Math.min(pTgt,pMix+dt/3):Math.max(pTgt,pMix-dt/3);}}
 // ---------- phone shell: start screen, fullscreen, wake lock, resize, adaptive frame rate ----------
 const qs=new URLSearchParams(location.search);pOG=qs.has('og')||qs.has('icon');var pNoT=qs.has('icon');const go=document.getElementById('go');let started=false,wl=null;
@@ -988,7 +993,8 @@ function pTempLoad(){try{const o=JSON.parse(localStorage.getItem('pParisTemp')||
 async function pTempFetch(){if(pOG)return;const q=qs.get('temp');if(q!==null){pTmp={v:+q,t:Date.now()};return;}
  try{const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=48.8566&longitude=2.3522&current=temperature_2m&temperature_unit=fahrenheit',{cache:'no-store'});if(!r.ok)return;const j=await r.json(),v=j&&j.current&&j.current.temperature_2m;
   if(typeof v==='number'&&isFinite(v)){pTmp={v,t:Date.now()};try{localStorage.setItem('pParisTemp',JSON.stringify(pTmp));}catch(_){}}}catch(_){}}
-function pTempDraw(dn){if(pOG||!pTmp||pTmp.v==null||Date.now()-pTmp.t>3*3600e3)return;const txt='Paris · '+Math.round(pTmp.v)+'°F',key=txt+dn+W;
+function pParisClock(){const d=pNow();try{return new Intl.DateTimeFormat('en-US',{timeZone:'Europe/Paris',hour:'numeric',minute:'2-digit'}).format(d);}catch(_){const y=d.getUTCFullYear(),ls=D=>{const t=new Date(Date.UTC(y,D,31,1));t.setUTCDate(31-t.getUTCDay());return t.getTime();},dst=d.getTime()>=ls(2)&&d.getTime()<ls(9),p=new Date(d.getTime()+(dst?2:1)*36e5);let h=p.getUTCHours();const ap=h<12?'AM':'PM';h=h%12||12;return h+':'+String(p.getUTCMinutes()).padStart(2,'0')+' '+ap;}}
+function pTempDraw(dn){if(pOG||!pTmp)return;const tOk=pTmp.v!=null&&Date.now()-pTmp.t<=3*3600e3,txt='Paris · '+pParisClock()+(tOk?' · '+Math.round(pTmp.v)+'°F':''),key=txt+dn+W;
  if(key!==pTmpK){pTmpK=key;const fs=Math.round(U*(pPort?0.026:0.025)),m=pCv(4,4).getContext('2d'),font=`italic ${fs}px ${PSF}`;m.font=font;const tw=Math.ceil(m.measureText(txt).width+fs*1.2),th=Math.ceil(fs*1.8);pTmpCv=pCv(tw,th);const g=pTmpCv.getContext('2d');
   g.font=font;g.textAlign='center';g.textBaseline='middle';g.shadowColor=dn?'rgba(255,255,255,0.95)':'rgba(255,170,60,0.7)';g.shadowBlur=fs*0.45;g.fillStyle=dn?'#2a3f74':'#ffe6b0';g.fillText(txt,tw/2,th/2);}
  x.save();x.globalAlpha=1;x.globalCompositeOperation='source-over';x.drawImage(pTmpCv,pMX-pTmpCv.width/2,pMY+pMR*1.75);x.restore();}
