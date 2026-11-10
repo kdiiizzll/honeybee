@@ -377,7 +377,7 @@ pCl=[];const R=pRng(77);for(let i=0;i<5;i++){const cw=U*(0.22+R()*0.2),chh=cw*0.
 pBuf=pCv(W,H);pBx=pBuf.getContext('2d');pBalInit();pLiveInit();}
 function pFrame(dt){pT+=dt;pTick(dt);pGlStep(dt);const m=pMix;pFrameMain(dt,m);pWxDraw(pMix>=0.5?1:0,dt);pSurDraw(pMix>=0.5?1:0,dt);if(!pSurOpenNow){pSurAmbient(pMix>=0.5?1:0,dt);pWishDraw(pMix>=0.5?1:0,dt);}pTempDraw(pMix>=0.5?1:0);}
 function pFrameMain(dt,m){if(m<1)pDraw(dt,0,true);if(m>0){if(m<1){const x0=x;x=pBx;pDraw(0,1,false);x=x0;x.globalAlpha=m;x.drawImage(pBuf,0,0);x.globalAlpha=1;}else pDraw(dt,1,true);}}
-function pDraw(dt,dn,prim){const L=pL[dn],VIS=pGlVis();x.globalCompositeOperation='source-over';x.globalAlpha=1;x.drawImage(L.bg,0,0);pGolden(dn);pWxSky(dn);pGrowFar(dn);if(pLv.bu>=10||pLv.bu===11)pBuSky(dn);if(pLv.tint)pHolSky(dn);if(pLv.bu===11){const k=pWK();if(k>0){const q=x.createLinearGradient(0,0,0,pFY);q.addColorStop(0,dn?'rgba(255,140,185,0.07)':'rgba(255,100,170,0.09)');q.addColorStop(0.65,dn?'rgba(255,175,160,0.09)':'rgba(255,140,160,0.10)');q.addColorStop(1,dn?'rgba(255,200,110,0.16)':'rgba(255,185,100,0.16)');x.globalAlpha=k;x.fillStyle=q;x.fillRect(0,0,W,pFY);x.globalAlpha=1;}}
+function pDraw(dt,dn,prim){const L=pL[dn],VIS=pGlVis();x.globalCompositeOperation='source-over';x.globalAlpha=1;x.drawImage(L.bg,0,0);pGolden(dn);pWxSky(dn);pGrowFar(dn);pSearch(dn);if(pLv.bu>=10||pLv.bu===11)pBuSky(dn);if(pLv.tint)pHolSky(dn);if(pLv.bu===11){const k=pWK();if(k>0){const q=x.createLinearGradient(0,0,0,pFY);q.addColorStop(0,dn?'rgba(255,140,185,0.07)':'rgba(255,100,170,0.09)');q.addColorStop(0.65,dn?'rgba(255,175,160,0.09)':'rgba(255,140,160,0.10)');q.addColorStop(1,dn?'rgba(255,200,110,0.16)':'rgba(255,185,100,0.16)');x.globalAlpha=k;x.fillStyle=q;x.fillRect(0,0,W,pFY);x.globalAlpha=1;}}
 if(dn){for(const c of pCl){const w=c.cv.width,xx=((c.x0+pT*c.sp)%(W+w))-w;x.globalAlpha=0.9;x.drawImage(c.cv,xx,c.y);}x.globalAlpha=1;
 }pAvSky(dn,L);
 if(!dn){
@@ -1072,6 +1072,25 @@ function pMeteorDraw(m,a,dn){const k=a/m.l,[hx,hy]=pMeteorHead(m,a),sp=Math.hypo
  const q=x.createLinearGradient(tx,ty,hx,hy);q.addColorStop(0,'rgba(255,255,255,0)');q.addColorStop(1,dn?`rgba(255,255,255,${(0.7*al).toFixed(3)})`:`rgba(255,240,215,${(0.95*al).toFixed(3)})`);x.strokeStyle=q;x.lineWidth=Math.max(1,U*0.0022*m.w);x.beginPath();x.moveTo(tx,ty);x.lineTo(hx,hy);x.stroke();
  const r=U*0.009*m.w;x.globalAlpha=al;x.drawImage(pGl,hx-r,hy-r,r*2,r*2);x.globalAlpha=1;}
 // slower stars between the showers, so there is always one to catch tonight
+// tonight's searchlights: two beams sweep the sky behind the city; once a minute they trace a glowing heart above the landmark
+var pSlTrail=[[],[]],pSlCyc=-1;
+function pHeartPt(th,sc){return[16*Math.pow(Math.sin(th),3)*sc,-(13*Math.cos(th)-5*Math.cos(2*th)-2*Math.cos(3*th)-Math.cos(4*th))*sc];}
+function pSearch(dn){if(pSurCur!==5||dn||pOG)return;const LM=pLandmark(),src=[[W*(pPort?0.1:0.14),pFY],[W*(pPort?0.9:0.86),pFY]],sc=U*(pPort?0.0105:0.0095),hc=[LM.x,Math.max(H*(pPort?0.3:0.2),LM.y-U*0.2)],
+ per=60,c=(pT+50)%per,cyc=Math.floor((pT+50)/per),ez=v=>v<=0?0:v>=1?1:v*v*(3-2*v),Lb=H*0.8;if(cyc!==pSlCyc){pSlCyc=cyc;pSlTrail=[[],[]];}
+ const sweep=(i)=>{const a=-Math.PI/2+(i?-1:1)*(0.28+0.32*Math.sin(pT*0.23+i*1.9));return[src[i][0]+Math.cos(a)*Lb,src[i][1]+Math.sin(a)*Lb];},hp=(i,th)=>{const [hx,hy]=pHeartPt(th,sc);return[hc[0]+(i?hx:-hx),hc[1]+hy];};
+ let k=0,trace=0,hold=0;if(c<2)k=ez(c/2);else if(c<6){k=1;trace=(c-2)/4;}else if(c<10){k=1;trace=1;hold=1;}else if(c<12){k=1-ez((c-10)/2);trace=1;hold=Math.max(0,1-(c-10)/1.5);}
+ x.save();x.globalCompositeOperation='lighter';
+ for(let i=0;i<2;i++){const th=Math.PI*Math.min(1,trace),tgt=c<2?hp(i,0):c<10?hp(i,th):hp(i,Math.PI),sw=sweep(i),E=[sw[0]+(tgt[0]-sw[0])*k,sw[1]+(tgt[1]-sw[1])*k],S0=src[i];
+  if(c>=2&&c<6){const T=pSlTrail[i],last=T[T.length-1];if(!last||Math.hypot(last[0]-E[0],last[1]-E[1])>U*0.004)T.push(E);}
+  const dx=E[0]-S0[0],dy=E[1]-S0[1],len=Math.hypot(dx,dy),nx=-dy/len,ny=dx/len,wEnd=U*(k>0.5?0.03:0.06);const g=x.createLinearGradient(S0[0],S0[1],E[0],E[1]);g.addColorStop(0,'rgba(255,245,220,0.32)');g.addColorStop(0.7,'rgba(255,235,210,0.14)');g.addColorStop(1,'rgba(255,225,200,0.04)');
+  x.fillStyle=g;x.beginPath();x.moveTo(S0[0]-nx*U*0.006,S0[1]-ny*U*0.006);x.lineTo(E[0]-nx*wEnd,E[1]-ny*wEnd);x.lineTo(E[0]+nx*wEnd,E[1]+ny*wEnd);x.lineTo(S0[0]+nx*U*0.006,S0[1]+ny*U*0.006);x.closePath();x.fill();
+  x.strokeStyle='rgba(255,250,235,0.25)';x.lineWidth=Math.max(1,U*0.002);x.beginPath();x.moveTo(S0[0],S0[1]);x.lineTo(E[0],E[1]);x.stroke();
+  if(k>0.3){const r=U*0.03*k;x.globalAlpha=0.55*k;x.drawImage(pGl,E[0]-r,E[1]-r,r*2,r*2);x.globalAlpha=1;}
+  const rs=U*0.05,gs=x.createRadialGradient(S0[0],S0[1],0,S0[0],S0[1],rs);gs.addColorStop(0,'rgba(255,240,210,0.5)');gs.addColorStop(1,'rgba(255,240,210,0)');x.fillStyle=gs;x.fillRect(S0[0]-rs,S0[1]-rs,rs*2,rs*2);}
+ // the glowing heart the beams leave behind
+ const fade=c<10?1:Math.max(0,1-(c-10)/2),pulse=hold?1+0.12*Math.sin(pT*4):1;if(fade>0&&(pSlTrail[0].length>1||pSlTrail[1].length>1)){for(const [w,a,col] of [[U*0.016,0.18,'255,120,170'],[U*0.007,0.45,'255,170,200'],[U*0.0025,0.95,'255,245,235']]){x.strokeStyle=`rgba(${col},${(a*fade*pulse).toFixed(3)})`;x.lineWidth=w;x.lineJoin='round';x.lineCap='round';for(const T of pSlTrail){if(T.length<2)continue;x.beginPath();x.moveTo(T[0][0],T[0][1]);for(const q of T)x.lineTo(q[0],q[1]);x.stroke();}}
+  if(hold){x.globalAlpha=0.35*fade*hold;const r=U*0.09;x.drawImage(pGl,hc[0]-r,hc[1]-r*0.8,r*2,r*2);x.globalAlpha=1;}}
+ x.restore();x.globalAlpha=1;x.globalCompositeOperation='source-over';}
 // tonight's sky lanterns: ~24 glowing paper lanterns drifting up all evening; new ones rise from the Seine as old ones fade out high above
 var pLanT=null;
 function pLanMake(any){const R=Math.random;return{x:R()*W,y:any?H*(0.06+R()*0.7):pRv0+R()*pRvH*0.6,v:U*(0.012+R()*0.012),sw:U*(0.008+R()*0.012),ph:R()*6.283,s:U*(0.010+R()*0.009),fl:R()*6.283,a:any?1:0};}
