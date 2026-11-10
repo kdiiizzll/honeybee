@@ -593,7 +593,7 @@ function pLiveUpd(){const d=pNow(),key=pYmd(d)+(pMix>=0.5?'d':'n')+(d.getTime()>
   L.fx=[...new Set(L.fx)];}
  // monthly surprise (skipped on days a holiday / anniversary / special day owns)
  {const M=pMoFor(d),own=!!(L.banner||L.hol||L.tint||L.fin||L.hooks.length||L.bu>=0);L.mo=M&&!own?M.k:0;if(L.mo){const f1=dt===1;if(f1)L.sub=M.line;L.hooks.push(pMoHook(M,f1));}}
- {const sn=pSurN();if(sn&&!L.banner)L.banner='Surprise '+sn+' of 4 ♥';}
+ {const sn=pSurN();if(sn&&!L.banner)L.banner=sn===5?'Tonight is just for you ♥':'Surprise '+sn+' of 4 ♥';}
  L.wx=pWeatherFor(d,L);
  pLv=L;}
 function pLiveInit(){pHalo=null;pBoatInit();pPtKey='';pNoteS='';pSubS='';pSnowCap=null;const sp=(w,h,f)=>{const k=pCv(w,h),g=k.getContext('2d');f(g,w,h);return k;},r=Math.max(4,U*0.009);
@@ -997,9 +997,10 @@ const PSUR_L=[
  {h:'Surprise 1 of 4',m:"I couldn't wait until Saturday to surprise you, so I hid something new in your Paris every day this week. Keep your eyes on the sky, Honeybee."},
  {h:'Surprise 2 of 4',m:"Every heart in tonight's sky is one I've been saving just for you. I love you more than all of them put together."},
  {h:'Surprise 3 of 4',m:"In Paris they say a lantern carries a wish. Mine is simple: a lifetime of ordinary days with you, and every one of them a gift from God."},
- {h:'Surprise 4 of 4',m:"Tomorrow I marry my best friend. Tonight I just want you to rest, smile, and know how deeply you are loved. I'll see you at the altar."}];
+ {h:'Surprise 4 of 4',m:"Tomorrow I marry my best friend. Tonight I just want you to rest, smile, and know how deeply you are loved. I'll see you at the altar."},
+ {h:'A little something for tonight',m:"Before the week of surprises begins, I wanted tonight to be just yours. Make a wish on every star you see. Mine already came true — it's you."}];
 var pSurCur=0,pSurT0=-1,pSurNext=-1,pSurS=null,pSurOpenNow=false;
-function pSurN(){if(pOG)return 0;const q=parseInt(qs.get('surprise'),10);if(q>=1&&q<=4)return q;const d=pNow();if(d.getFullYear()!==WEDDING_Y||d.getMonth()!==WEDDING_M)return 0;const dt=d.getDate();return dt>=10&&dt<=13?dt-9:0;}
+function pSurN(){if(pOG)return 0;const q=parseInt(qs.get('surprise'),10);if(q>=1&&q<=5)return q;const d=pNow();if(d.getFullYear()!==WEDDING_Y||d.getMonth()!==WEDDING_M)return 0;const dt=d.getDate();if(dt===9&&d.getHours()>=17)return 5;return dt>=10&&dt<=13?dt-9:0;}
 function pSurMaybe(){const n=pSurN();pSurCur=n;pSurT0=-1;pSurNext=-1;if(!n)return;let seen=false;try{seen=localStorage.getItem('pSurSeen'+n)==='1'&&!qs.get('surprise');}catch(_){}if(seen){pSurNext=pT+3;return;}pSurLetter(n);}
 function pSurLetter(n){const L=PSUR_L[n-1];if(!L||document.getElementById('sur'))return;pSurOpenNow=true;
  if(!document.getElementById('surcss')){const st=document.createElement('style');st.id='surcss';st.textContent=`
@@ -1030,6 +1031,7 @@ function pSurStart(n){pSurT0=pT;pSurNext=pT+150;const S={n,p:[]};
  if(n===1){const txt='Je t’aime, Helina ♥',maxW=pPort?W*0.86:W*0.5,m=pCv(4,4).getContext('2d');let fs=Math.round(U*(pPort?0.09:0.08));m.font=`italic 700 ${fs}px ${PSF}`;let tw=m.measureText(txt).width;if(tw>maxW){fs=Math.floor(fs*maxW/tw);m.font=`italic 700 ${fs}px ${PSF}`;tw=m.measureText(txt).width;}
   const cw=Math.ceil(tw+fs),ch=Math.ceil(fs*1.6),c=pCv(cw,ch),g=c.getContext('2d');g.font=m.font;g.textBaseline='middle';g.fillStyle='#000';g.fillText(txt,fs*0.5,ch/2);const d=g.getImageData(0,0,cw,ch).data,st=Math.max(2,Math.round(fs*0.07)),cx=pPort?W/2:W*0.6,cy=pPort?H*0.37:H*0.4,ox=cx-cw/2,oy=cy-ch/2;
   for(let yy=0;yy<ch;yy+=st)for(let xx=0;xx<cw;xx+=st)if(d[(yy*cw+xx)*4+3]>120)S.p.push([ox+xx+(Math.random()-0.5)*st*0.6,oy+yy+(Math.random()-0.5)*st*0.6,Math.random()]);S.x0=ox;S.x1=ox+cw;S.y=oy-fs*0.35;S.r=st*1.1;}
+ else if(n===5){const R=Math.random;for(let i=0;i<150;i++){const a=0.45+R()*0.35,sp=U*(1.1+R()*0.7);S.p.push({t0:R()*12,x:-W*0.1+R()*W*1.05,y:R()*H*0.45,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,l:0.7+R()*0.7,L:U*(0.09+R()*0.12),w:0.6+R()*0.8});}}
  else if(n===3){const R=Math.random;for(let i=0;i<110;i++)S.p.push({x:R()*W,y:pRv0+R()*pRvH*0.8,t0:R()*9,v:U*(0.04+R()*0.035),s:U*(0.011+R()*0.009),ph:R()*6.283,c:R()});}
  else if(n===4){const R=Math.random,hc=[W/2,pPort?H*0.43:H*0.45],sc=Math.min(W*0.8,H*0.62)/34;S.hc=hc;S.sc=sc;for(let i=0;i<300;i++){const t=R()*6.283,f=Math.sqrt(R())*0.92+0.08,tx=hc[0]+16*Math.pow(Math.sin(t),3)*sc*f,ty=hc[1]-(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))*sc*f-sc*1.5;
   S.p.push({sx:-W*(0.1+R()*0.5),sy:H*(0.1+R()*0.8),tx,ty,d:R()*1.2,rot:R()*6.283,vr:(R()-0.5)*4,s:U*(0.007+R()*0.006),c:['#e0304a','#ff6f8f','#c8183a','#ff9fb8','#f04e6e'][(R()*5)|0],ex:W*(0.9+R()*0.6),ey:-H*(0.1+R()*0.6)});}}
@@ -1039,6 +1041,10 @@ function pSurDraw(dn,dt){if(!pSurCur||pOG||pSurOpenNow)return;if(pSurT0>pT+0.5)p
  if(S.n===1){const W8=9,fade=t<W8+10?1:Math.max(0,1-(t-W8-10)/6),px=S.x0+(S.x1-S.x0)*Math.min(1,t/W8),drift=Math.max(0,t-W8)*U*0.004;if(fade<=0){pSurT0=-1;x.restore();return;}
   x.globalCompositeOperation=dn?'source-over':'lighter';const r=S.r;for(const p of S.p){if(p[0]>px)continue;const age=(px-p[0])/(S.x1-S.x0)*W8+Math.max(0,t-W8),gr=Math.min(1,age*3),rr=r*(0.7+gr*0.6+p[2]*0.4+Math.min(1.2,Math.max(0,t-W8)*0.06));if(dn){x.globalAlpha=fade*0.22*gr;x.fillStyle='#5f7fae';x.beginPath();x.arc(p[0]+drift+rr*0.18,p[1]+rr*0.22,rr*0.95,0,6.283);x.fill();}x.globalAlpha=fade*(dn?1:0.75)*gr;x.drawImage(pGl,p[0]+drift-rr*1.3,p[1]-rr*1.3,rr*2.6,rr*2.6);}
   x.globalCompositeOperation='source-over';x.globalAlpha=1;if(t<W8+1.5){const wob=Math.sin(t*6)*U*0.004;pSurPlane(px+U*0.02,S.y+wob,U*0.016,dn);}}
+ else if(S.n===5){if(t>17){pSurT0=-1;x.restore();return;}if(t>13.5&&!S.wish){S.wish=1;pEv=null;pNext=pT;}x.globalCompositeOperation='lighter';x.lineCap='round';
+  for(const m of S.p){const a=t-m.t0;if(a<0||a>m.l)continue;const k=a/m.l,hx=m.x+m.vx*a,hy=m.y+m.vy*a,sp=Math.hypot(m.vx,m.vy),tx=hx-m.vx/sp*m.L*Math.min(1,a*4),ty=hy-m.vy/sp*m.L*Math.min(1,a*4),al=Math.sin(Math.PI*k);
+   const q=x.createLinearGradient(tx,ty,hx,hy);q.addColorStop(0,'rgba(255,255,255,0)');q.addColorStop(1,dn?`rgba(255,255,255,${(0.7*al).toFixed(3)})`:`rgba(255,240,215,${(0.95*al).toFixed(3)})`);x.strokeStyle=q;x.lineWidth=Math.max(1,U*0.0022*m.w);x.beginPath();x.moveTo(tx,ty);x.lineTo(hx,hy);x.stroke();
+   const r=U*0.009*m.w;x.globalAlpha=al;x.drawImage(pGl,hx-r,hy-r,r*2,r*2);x.globalAlpha=1;}x.globalCompositeOperation='source-over';}
  else if(S.n===2){const LM=pLandmark(),cx=(LM.fx0+LM.fx1)/2,top=LM.y;if(t<13){const k=Math.floor(t/0.8);if(!S.k||S.k<=k){S.k=k+1;const R=Math.random,bx=LM.fx0+R()*(LM.fx1-LM.fx0),by=top-U*0.05+R()*(pFY-top)*0.45;pSurBurst(S,bx,by,U*(0.05+R()*0.04),56);}}
   if(t>=13&&!S.big){S.big=1;pSurBurst(S,cx,top+(pFY-top)*0.18,U*0.16,180);}
   if(t>22&&!S.p.length){pSurT0=-1;x.restore();return;}pSurParts(S,dn,dt);}
