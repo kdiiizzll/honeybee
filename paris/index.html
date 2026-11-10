@@ -1072,7 +1072,17 @@ function pMeteorDraw(m,a,dn){const k=a/m.l,[hx,hy]=pMeteorHead(m,a),sp=Math.hypo
  const q=x.createLinearGradient(tx,ty,hx,hy);q.addColorStop(0,'rgba(255,255,255,0)');q.addColorStop(1,dn?`rgba(255,255,255,${(0.7*al).toFixed(3)})`:`rgba(255,240,215,${(0.95*al).toFixed(3)})`);x.strokeStyle=q;x.lineWidth=Math.max(1,U*0.0022*m.w);x.beginPath();x.moveTo(tx,ty);x.lineTo(hx,hy);x.stroke();
  const r=U*0.009*m.w;x.globalAlpha=al;x.drawImage(pGl,hx-r,hy-r,r*2,r*2);x.globalAlpha=1;}
 // slower stars between the showers, so there is always one to catch tonight
-function pSurAmbient(dn,dt){if(pSurCur!==5)return;if(pT>=pSurAmbNext){pSurAmbNext=pT+3.5+Math.random()*2.5;const R=Math.random,a=0.4+R()*0.35,sp=U*(0.45+R()*0.2);pSurAmb.push({t0:pT,x:-W*0.05+R()*W*0.8,y:H*(0.05+R()*0.3),vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,l:2.2+R()*0.8,L:U*(0.14+R()*0.08),w:1.1+R()*0.4});}
+// tonight's sky lanterns: ~24 glowing paper lanterns drifting up all evening; new ones rise from the Seine as old ones fade out high above
+var pLanT=null;
+function pLanMake(any){const R=Math.random;return{x:R()*W,y:any?H*(0.06+R()*0.7):pRv0+R()*pRvH*0.6,v:U*(0.012+R()*0.012),sw:U*(0.008+R()*0.012),ph:R()*6.283,s:U*(0.010+R()*0.009),fl:R()*6.283,a:any?1:0};}
+function pLanterns(dn,dt){if(pSurCur!==5||pOG)return;if(!pLanT||pLanT.W!==W){pLanT=Array.from({length:Math.round(pPort?22:26)},()=>pLanMake(true));pLanT.W=W;}
+ x.save();for(let i=0;i<pLanT.length;i++){const L=pLanT[i];L.y-=L.v*dt;L.a=Math.min(1,L.a+dt*0.5);const xx=L.x+Math.sin(pT*0.25+L.ph)*L.sw,yy=L.y;if(yy<H*0.03){const n=pLanMake(false);n.W=0;pLanT[i]=n;continue;}
+  const top=Math.min(1,(yy-H*0.03)/(H*0.12)),inT=pBlk&&xx>pBlk[0]&&xx<pBlk[2]&&yy<pBlk[3]+U*0.02?0.25:1,al=L.a*top*inT,s=L.s*(0.85+0.15*Math.min(1,(pFY-yy)/(pFY*0.5)));if(al<=0.01)continue;
+  const fl=0.85+0.15*Math.sin(pT*7+L.fl)*Math.sin(pT*3.1+L.fl*2);x.globalCompositeOperation='lighter';x.globalAlpha=al*0.6*fl;const g=x.createRadialGradient(xx,yy,0,xx,yy,s*3.4);g.addColorStop(0,'rgba(255,185,95,0.95)');g.addColorStop(0.45,'rgba(255,150,70,0.35)');g.addColorStop(1,'rgba(255,120,60,0)');x.fillStyle=g;x.fillRect(xx-s*3.4,yy-s*3.4,s*6.8,s*6.8);
+  x.globalCompositeOperation='source-over';x.globalAlpha=al;const q=x.createLinearGradient(0,yy-s,0,yy+s);q.addColorStop(0,'#fff0c4');q.addColorStop(0.6,'#ffb85a');q.addColorStop(1,'#e8782a');x.fillStyle=q;x.beginPath();x.moveTo(xx-s*0.5,yy-s*0.95);x.quadraticCurveTo(xx,yy-s*1.1,xx+s*0.5,yy-s*0.95);x.lineTo(xx+s*0.4,yy+s*0.8);x.lineTo(xx-s*0.4,yy+s*0.8);x.closePath();x.fill();
+  x.fillStyle=`rgba(255,250,215,${(0.8*fl).toFixed(2)})`;x.beginPath();x.ellipse(xx,yy+s*0.55,s*0.14,s*0.22,0,0,6.283);x.fill();}
+ x.restore();x.globalAlpha=1;x.globalCompositeOperation='source-over';}
+function pSurAmbient(dn,dt){if(pSurCur!==5)return;pLanterns(dn,dt);if(pT>=pSurAmbNext){pSurAmbNext=pT+3.5+Math.random()*2.5;const R=Math.random,a=0.4+R()*0.35,sp=U*(0.45+R()*0.2);pSurAmb.push({t0:pT,x:-W*0.05+R()*W*0.8,y:H*(0.05+R()*0.3),vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,l:2.2+R()*0.8,L:U*(0.14+R()*0.08),w:1.1+R()*0.4});}
  x.save();x.globalCompositeOperation='lighter';x.lineCap='round';for(let i=pSurAmb.length-1;i>=0;i--){const m=pSurAmb[i],a=pT-m.t0;if(a>m.l||m.caught){pSurAmb.splice(i,1);continue;}pMeteorDraw(m,a,dn);}x.restore();x.globalCompositeOperation='source-over';}
 // tap: catch the nearest falling star within reach
 function pSurCatch(e){if(pSurCur!==5||pOG)return false;const X=(e.clientX||0)*DPR,Y=(e.clientY||0)*DPR,reach=U*0.075;let best=null,bd=reach;
