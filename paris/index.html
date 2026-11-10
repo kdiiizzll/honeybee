@@ -1066,7 +1066,12 @@ const PWISH=["I wish for a lifetime of you.","I wish for slow mornings and coffe
  "I wish to keep falling for you, forever.","I wish for Paris with you, for real.","I wish to be the man you deserve.","I wish for God to bless every year we share.",
  "I wish for more adventures with my best friend.","I wish you knew how beautiful you are to me.","I wish for Saturday to hurry up.","I wish to hear you say “I do.”",
  "I wish to keep choosing you, every day.","I wish for our love to grow sweeter than honey.","I wish for nothing more. I already have you.","I wish for this feeling to never end."];
+const PWISH_MORE=["I wish for Sunday mornings with you forever.", "I wish to always be your safe place.", "I wish for a lifetime of inside jokes with you.", "I wish to travel the world with you, starting with Paris.", "I wish for your smile to be the first thing I see every day.", "I wish to grow old on a porch with you.", "I wish for every hard day to end in your arms.", "I wish for laughter in every room of our home.", "I wish to pray beside you every night.", "I wish to love you better every year.", "I wish for a hundred more anniversaries.", "I wish to always make you feel chosen.", "I wish for snow days and hot cocoa with you.", "I wish to keep writing you love notes forever.", "I wish for you to always know you're my favorite.", "I wish for long walks and longer talks with you.", "I wish to see you happy, every single day.", "I wish for more nights under the stars with you.", "I wish to be your best friend for life.", "I wish for nothing to ever come between us."];
+function pWishPool(){return pNow().getTime()<WEDDING_UTC?PWISH:PWISH.filter(w=>!/Saturday to hurry|say “I do|say “I do/.test(w)).concat(PWISH_MORE);}
+// catchable stars every night (and all evening on Nov 9)
+function pStarNight(){return !pOG&&(pSurCur===5||pMix<0.5);}
 var pSurAmb=[],pSurAmbNext=0,pWishFx=[],pWishCard=null,pSurHintN=0;
+var pWishHintT=-99;function pWishHintMaybe(){if(pSurCur===5)return;try{const n=+(localStorage.getItem('pWishHint')||0);if(n<3){localStorage.setItem('pWishHint',String(n+1));pWishHintT=pT;}}catch(_){}}
 function pMeteorHead(m,a){return[m.x+m.vx*a,m.y+m.vy*a];}
 function pMeteorDraw(m,a,dn){const k=a/m.l,[hx,hy]=pMeteorHead(m,a),sp=Math.hypot(m.vx,m.vy),tx=hx-m.vx/sp*m.L*Math.min(1,a*4),ty=hy-m.vy/sp*m.L*Math.min(1,a*4),al=Math.sin(Math.PI*k);
  const q=x.createLinearGradient(tx,ty,hx,hy);q.addColorStop(0,'rgba(255,255,255,0)');q.addColorStop(1,dn?`rgba(255,255,255,${(0.7*al).toFixed(3)})`:`rgba(255,240,215,${(0.95*al).toFixed(3)})`);x.strokeStyle=q;x.lineWidth=Math.max(1,U*0.0022*m.w);x.beginPath();x.moveTo(tx,ty);x.lineTo(hx,hy);x.stroke();
@@ -1075,7 +1080,8 @@ function pMeteorDraw(m,a,dn){const k=a/m.l,[hx,hy]=pMeteorHead(m,a),sp=Math.hypo
 // tonight's searchlights: two beams sweep the sky behind the city; once a minute they trace a glowing heart above the landmark
 var pSlTrail=[[],[]],pSlCyc=-1;
 function pHeartPt(th,sc){return[16*Math.pow(Math.sin(th),3)*sc,-(13*Math.cos(th)-5*Math.cos(2*th)-2*Math.cos(3*th)-Math.cos(4*th))*sc];}
-function pSearch(dn){if(pSurCur!==5||dn||pOG)return;const LM=pLandmark(),src=[[W*(pPort?0.1:0.14),pFY],[W*(pPort?0.9:0.86),pFY]],sc=U*(pPort?0.0105:0.0095),hc=[LM.x,Math.max(H*(pPort?0.3:0.2),LM.y-U*0.2)],
+function pAnnivNight(){const d=pNow();return d.getMonth()===WEDDING_M&&d.getDate()===WEDDING_D&&d.getFullYear()>WEDDING_Y;}
+function pSearch(dn){if(!(pSurCur===5||pAnnivNight())||dn||pOG)return;const LM=pLandmark(),src=[[W*(pPort?0.1:0.14),pFY],[W*(pPort?0.9:0.86),pFY]],sc=U*(pPort?0.0105:0.0095),hc=[LM.x,Math.max(H*(pPort?0.3:0.2),LM.y-U*0.2)],
  per=60,c=(pT+50)%per,cyc=Math.floor((pT+50)/per),ez=v=>v<=0?0:v>=1?1:v*v*(3-2*v),Lb=H*0.8;if(cyc!==pSlCyc){pSlCyc=cyc;pSlTrail=[[],[]];}
  const sweep=(i)=>{const a=-Math.PI/2+(i?-1:1)*(0.28+0.32*Math.sin(pT*0.23+i*1.9));return[src[i][0]+Math.cos(a)*Lb,src[i][1]+Math.sin(a)*Lb];},hp=(i,th)=>{const [hx,hy]=pHeartPt(th,sc);return[hc[0]+(i?hx:-hx),hc[1]+hy];};
  let k=0,trace=0,hold=0;if(c<2)k=ez(c/2);else if(c<6){k=1;trace=(c-2)/4;}else if(c<10){k=1;trace=1;hold=1;}else if(c<12){k=1-ez((c-10)/2);trace=1;hold=Math.max(0,1-(c-10)/1.5);}
@@ -1101,16 +1107,16 @@ function pLanterns(dn,dt){if(pSurCur!==5||pOG)return;if(!pLanT||pLanT.W!==W){pLa
   x.globalCompositeOperation='source-over';x.globalAlpha=al;const q=x.createLinearGradient(0,yy-s,0,yy+s);q.addColorStop(0,'#fff0c4');q.addColorStop(0.6,'#ffb85a');q.addColorStop(1,'#e8782a');x.fillStyle=q;x.beginPath();x.moveTo(xx-s*0.5,yy-s*0.95);x.quadraticCurveTo(xx,yy-s*1.1,xx+s*0.5,yy-s*0.95);x.lineTo(xx+s*0.4,yy+s*0.8);x.lineTo(xx-s*0.4,yy+s*0.8);x.closePath();x.fill();
   x.fillStyle=`rgba(255,250,215,${(0.8*fl).toFixed(2)})`;x.beginPath();x.ellipse(xx,yy+s*0.55,s*0.14,s*0.22,0,0,6.283);x.fill();}
  x.restore();x.globalAlpha=1;x.globalCompositeOperation='source-over';}
-function pSurAmbient(dn,dt){if(pSurCur!==5)return;pLanterns(dn,dt);if(pT>=pSurAmbNext){pSurAmbNext=pT+3.5+Math.random()*2.5;const R=Math.random,a=0.4+R()*0.35,sp=U*(0.45+R()*0.2);pSurAmb.push({t0:pT,x:-W*0.05+R()*W*0.8,y:H*(0.05+R()*0.3),vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,l:2.2+R()*0.8,L:U*(0.14+R()*0.08),w:1.1+R()*0.4});}
+function pSurAmbient(dn,dt){if(!pSurAmb)return;pLanterns(dn,dt);if(!pStarNight())return;if(pT>=pSurAmbNext){pSurAmbNext=pT+(pSurCur===5?3.5+Math.random()*2.5:5+Math.random()*4);pWishHintMaybe();const R=Math.random,a=0.4+R()*0.35,sp=U*(0.45+R()*0.2);pSurAmb.push({t0:pT,x:-W*0.05+R()*W*0.8,y:H*(0.05+R()*0.3),vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,l:2.2+R()*0.8,L:U*(0.14+R()*0.08),w:1.1+R()*0.4});}
  x.save();x.globalCompositeOperation='lighter';x.lineCap='round';for(let i=pSurAmb.length-1;i>=0;i--){const m=pSurAmb[i],a=pT-m.t0;if(a>m.l||m.caught){pSurAmb.splice(i,1);continue;}pMeteorDraw(m,a,dn);}x.restore();x.globalCompositeOperation='source-over';}
 // tap: catch the nearest falling star within reach
-function pSurCatch(e){if(pSurCur!==5||pOG)return false;const X=(e.clientX||0)*DPR,Y=(e.clientY||0)*DPR,reach=U*0.075;let best=null,bd=reach;
+function pSurCatch(e){if(!pStarNight())return false;const X=(e.clientX||0)*DPR,Y=(e.clientY||0)*DPR,reach=U*0.075;let best=null,bd=reach;
  const test=(m,a)=>{if(m.caught||a<0||a>m.l)return;const [hx,hy]=pMeteorHead(m,a),d=Math.hypot(hx-X,hy-Y);if(d<bd){bd=d;best=[m,hx,hy];}};
  for(const m of pSurAmb)test(m,pT-m.t0);if(pSurS&&pSurS.n===5&&pSurT0>=0)for(const m of pSurS.p)test(m,pT-pSurT0-m.t0);if(!best)return false;
- const [m,hx,hy]=best;m.caught=true;let wi=0;try{wi=+(localStorage.getItem('pWishI')||0);localStorage.setItem('pWishI',String((wi+1)%PWISH.length));}catch(_){wi=Math.floor(Math.random()*PWISH.length);}
+ const [m,hx,hy]=best;m.caught=true;let wi=0;try{wi=+(localStorage.getItem('pWishI')||0);localStorage.setItem('pWishI',String(wi+1));}catch(_){wi=Math.floor(Math.random()*100);}
  const R=Math.random;for(let i=0;i<70;i++){const an=i/70*6.283,hx2=16*Math.pow(Math.sin(an),3)/16,hy2=-(13*Math.cos(an)-5*Math.cos(2*an)-2*Math.cos(3*an)-Math.cos(4*an))/16,s=U*0.11;pWishFx.push({x:hx,y:hy,vx:hx2*s*(0.9+R()*0.2),vy:hy2*s*(0.9+R()*0.2),a:0,l:1.4+R()*0.5,c:R()<0.7?'#ffd27a':'#fff4d6'});}
- pWishCard={t0:pT,x:hx,y:hy,txt:PWISH[wi%PWISH.length]};try{if(e.isTrusted&&navigator.vibrate)navigator.vibrate([15,40,25]);}catch(_){}return true;}
-function pWishDraw(dn,dt){if(!pWishFx)return;if(pSurCur!==5&&!pWishCard&&!pWishFx.length)return;x.save();x.globalCompositeOperation='lighter';
+ {const P=pWishPool();pWishCard={t0:pT,x:hx,y:hy,txt:P[wi%P.length]};}try{if(e.isTrusted&&navigator.vibrate)navigator.vibrate([15,40,25]);}catch(_){}return true;}
+function pWishDraw(dn,dt){if(!pWishFx)return;if(!pStarNight()&&!pWishCard&&!pWishFx.length)return;x.save();x.globalCompositeOperation='lighter';
  for(let i=pWishFx.length-1;i>=0;i--){const p=pWishFx[i];p.a+=dt;if(p.a>p.l){pWishFx.splice(i,1);continue;}const e=Math.exp(-p.a*2.6);p.x+=p.vx*dt*e*2.6;p.y+=p.vy*dt*e*2.6+U*0.015*dt*p.a;const k=1-p.a/p.l,r=Math.max(1,U*0.004*(0.5+k));x.globalAlpha=k;x.fillStyle=p.c;x.beginPath();x.arc(p.x,p.y,r,0,6.283);x.fill();if(k>0.5){x.globalAlpha=(k-0.5)*0.7;x.drawImage(pGl,p.x-r*3.5,p.y-r*3.5,r*7,r*7);}}
  x.globalCompositeOperation='source-over';x.globalAlpha=1;
  const C=pWishCard;if(C){const t=pT-C.t0,D=5.5;if(t>D)pWishCard=null;else{const al=Math.min(1,t/0.5,(D-t)/0.8),fs=Math.round(Math.min(U*0.04,W*0.055));x.font=`italic 700 ${fs}px ${PSF}`;x.textAlign='center';x.textBaseline='middle';
@@ -1118,7 +1124,7 @@ function pWishDraw(dn,dt){if(!pWishFx)return;if(pSurCur!==5&&!pWishCard&&!pWishF
   const lw=Math.max(...lines.map(l=>x.measureText(l).width)),pad=fs*0.7,cx=Math.min(W-lw/2-pad-W*0.03,Math.max(lw/2+pad+W*0.03,C.x)),cy=Math.max(H*0.17,Math.min(pFY*0.75,C.y-U*0.06))-t*U*0.006,bh=lines.length*fs*1.25+fs*1.6;x.globalAlpha=al*0.55;x.fillStyle='#140a2c';x.beginPath();if(x.roundRect)x.roundRect(cx-lw/2-pad,cy-bh/2-fs*0.35,lw+pad*2,bh,fs*0.6);else x.rect(cx-lw/2-pad,cy-bh/2-fs*0.35,lw+pad*2,bh);x.fill();x.globalAlpha=al;x.shadowColor='rgba(255,170,60,0.95)';x.shadowBlur=fs*0.6;x.fillStyle='#ffe6b0';
   lines.forEach((l,i)=>x.fillText(l,cx,cy+(i-(lines.length-1)/2)*fs*1.25));x.shadowBlur=0;x.font=`${Math.round(fs*0.9)}px ${PSF}`;x.fillStyle='#ffcf6e';x.fillText('♥',cx,cy-((lines.length+1)/2)*fs*1.25);}}
  // gentle hint during the first two showers
- if(pSurCur===5&&pSurHintN<=2&&pSurT0>=0&&pT-pSurT0<5){const fs=Math.round(Math.min(U*0.026,W*0.042)),al=Math.min(1,(pT-pSurT0)/0.6,(5-(pT-pSurT0))/0.8);x.globalAlpha=Math.max(0,al)*0.95;x.font=`italic ${fs}px ${PSF}`;x.textAlign='center';x.textBaseline='middle';x.shadowColor='rgba(255,170,60,0.9)';x.shadowBlur=fs*0.5;x.fillStyle='#fff1c4';x.fillText('Tap a falling star to catch a wish ♥',W/2,pFY*(pPort?0.62:0.7));x.shadowBlur=0;}
+ const hT=pSurCur===5&&pSurHintN<=2&&pSurT0>=0?pT-pSurT0:pT-pWishHintT;if(hT>=0&&hT<5&&(pSurCur===5?pSurHintN<=2&&pSurT0>=0:pStarNight())){const fs=Math.round(Math.min(U*0.026,W*0.042)),al=Math.min(1,hT/0.6,(5-hT)/0.8);x.globalAlpha=Math.max(0,al)*0.95;x.font=`italic ${fs}px ${PSF}`;x.textAlign='center';x.textBaseline='middle';x.shadowColor='rgba(255,170,60,0.9)';x.shadowBlur=fs*0.5;x.fillStyle='#fff1c4';x.fillText('Tap a falling star to catch a wish ♥',W/2,pFY*(pPort?0.62:0.7));x.shadowBlur=0;}
  x.restore();x.globalAlpha=1;}
 // ---------- tap rewards (after opening): hearts wherever she taps; tap the sky = wish on a shooting star; tap the tower/cathedral = it lights up ----------
 var pTapP=[],pTapSp=-1,pTapLast=0,pTapWish=-1,pBellAt=-99;
