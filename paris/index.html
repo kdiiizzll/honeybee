@@ -730,7 +730,38 @@ function pBoats(dn){if(!pBtSp[0])return;const sp=pBtSp[dn],wa=pRv0+pRvH*0.0,lw=s
   if(!dn){x.globalCompositeOperation='lighter';x.globalAlpha=0.18+0.06*Math.sin(pT*2+b.ph);x.fillStyle='#ffb54a';x.fillRect(-len*0.36,U*0.002,len*0.7,Math.max(1,hh*0.35));x.globalCompositeOperation='source-over';}
   x.globalAlpha=1;x.drawImage(sp,-len/2,-hh+hh*0.02,len,hh);if(pLv.bu>=5||(pLv.bu===-1&&bi===2)){x.save();if(b.dir<0)x.scale(-1,1);const fs=Math.max(7,hh*0.34);x.font=`italic 700 ${fs}px ${PSF}`;x.textAlign='center';x.textBaseline='middle';x.fillStyle=dn?'#c8304e':'#fff6e0';if(!dn){x.shadowColor='rgba(255,120,150,0.9)';x.shadowBlur=fs*0.6;}x.fillText('K \u2665 H',0,-hh*0.52);x.restore();}
   if(dn){const g2=(Math.sin(pT*0.8+b.ph*2)+1)/2;if(g2>0.8){x.globalCompositeOperation='lighter';x.globalAlpha=(g2-0.8)*3;const r=hh*0.6;x.drawImage(pFg,-len*0.1-r,-hh*0.62-r,r*2,r*2);x.globalCompositeOperation='source-over';x.globalAlpha=1;}}
-  x.restore();}pFerry(dn);pGrowRiver(dn);pGrowSwanPair(dn);}
+  x.restore();}pSpeedboat(dn);pFerry(dn);pGrowRiver(dn);pGrowSwanPair(dn);}
+// ---------- the wedding speedboat: a varnished mahogany runabout with the two of them aboard, zipping across the Seine ----------
+// before the wedding its sign reads "B ♥ H"; for the first month after: "Just Married" with tin cans bouncing behind; then "Mr & Mrs F ♥" (and she wears a little veil)
+function pSpeedboat(dn){if(pOG)return;const L=U*(pPort?0.15:0.12),cross=pPort?11:14,crossF=pPort?62:78,af=(((pT-2.5)%125)+125)%125;let u=-1;for(const st of [crossF+4,crossF+28]){const t=af-st;if(t>=0&&t<=cross)u=t/cross;}if(u<0)return;
+ const xc=W+L-u*(W+2*L),y=pRv0+pRvH*0.66+Math.sin(pT*6)*U*0.0008,sternX=xc+L/2,bowX=xc-L/2,now=pNow().getTime(),wed=now>=WEDDING_UTC,justM=wed&&now-WEDDING_UTC<30*864e5;x.save();
+ // wake and spray
+ x.strokeStyle=dn?'rgba(255,255,255,0.75)':'rgba(255,220,180,0.4)';x.lineWidth=Math.max(1,U*0.0016);x.beginPath();for(const sg of [-1,1]){x.moveTo(sternX,y);x.quadraticCurveTo(sternX+L*0.5,y+sg*L*0.02,sternX+L*1.2,y+sg*L*0.07+(sg>0?L*0.03:0));}x.stroke();
+ x.fillStyle=dn?'rgba(255,255,255,0.8)':'rgba(255,230,200,0.45)';for(let i=0;i<9;i++){const q=(pT*2.2+i/9)%1;x.globalAlpha=(1-q)*0.9;x.beginPath();x.ellipse(sternX+q*L*0.9,y+Math.sin(i*2.3)*L*0.015,L*(0.02+q*0.05),L*0.008,0,0,6.283);x.fill();}
+ for(let i=0;i<5;i++){const q=(pT*3+i/5)%1;x.globalAlpha=(1-q)*0.85;x.beginPath();x.arc(bowX+L*0.05+q*L*0.08,y-L*0.02-Math.sin(q*Math.PI)*L*0.06,L*0.012*(1-q*0.5),0,6.283);x.fill();}x.globalAlpha=1;
+ x.save();x.translate(xc,y);x.scale(-1,1);
+ const hull=()=>{x.beginPath();x.moveTo(-L*0.5,-L*0.09);x.lineTo(L*0.33,-L*0.1);x.quadraticCurveTo(L*0.56,-L*0.09,L*0.5,-L*0.02);x.lineTo(L*0.3,0);x.lineTo(-L*0.47,0);x.closePath();};
+ // reflection
+ x.save();x.scale(1,-0.45);x.globalAlpha=dn?0.22:0.3;x.fillStyle=dn?'#6a3a20':'#ffb060';hull();x.fill();x.restore();x.globalAlpha=1;
+ const q=x.createLinearGradient(0,-L*0.1,0,0);q.addColorStop(0,dn?'#a35a2c':'#4a2818');q.addColorStop(1,dn?'#5e2e16':'#1e100c');x.fillStyle=q;hull();x.fill();
+ x.fillStyle=dn?'#fff8ec':'#d9a24a';x.fillRect(-L*0.46,-L*0.055,L*0.82,Math.max(1,L*0.012));x.fillStyle=dn?'#f3e6c8':'#3a2a30';x.fillRect(-L*0.47,-L*0.112,L*0.8,Math.max(1,L*0.016));
+ // windshield
+ x.fillStyle=dn?'rgba(190,225,245,0.75)':'rgba(255,220,160,0.35)';x.beginPath();x.moveTo(L*0.08,-L*0.11);x.lineTo(L*0.14,-L*0.2);x.lineTo(L*0.2,-L*0.11);x.closePath();x.fill();
+ // the two of them (silhouettes): Bear at the wheel, Bee beside him
+ const sil=dn?'#2a2238':'#0a0812';x.fillStyle=sil;for(const [px,hr] of [[L*0.0,L*0.034],[-L*0.13,L*0.03]]){x.beginPath();x.ellipse(px,-L*0.13,L*0.045,L*0.035,0,Math.PI,0);x.fill();x.beginPath();x.arc(px,-L*0.19,hr,0,6.283);x.fill();}
+ x.beginPath();x.arc(-L*0.155,-L*0.215,L*0.016,0,6.283);x.fill();
+ if(wed){x.fillStyle=dn?'rgba(255,255,255,0.9)':'rgba(235,230,250,0.6)';x.beginPath();x.moveTo(-L*0.15,-L*0.225);x.quadraticCurveTo(-L*0.26,-L*0.24+Math.sin(pT*9)*L*0.01,-L*0.33,-L*0.17+Math.sin(pT*7)*L*0.015);x.lineTo(-L*0.28,-L*0.15);x.quadraticCurveTo(-L*0.21,-L*0.18,-L*0.15,-L*0.2);x.fill();}
+ // heart flag at the stern
+ x.strokeStyle=dn?'#5a4a3a':'#c9b08a';x.lineWidth=Math.max(1,L*0.01);x.beginPath();x.moveTo(-L*0.44,-L*0.1);x.lineTo(-L*0.44,-L*0.27);x.stroke();const fl=Math.sin(pT*12)*L*0.012;x.fillStyle='#c8304e';x.beginPath();x.moveTo(-L*0.44,-L*0.27);x.lineTo(-L*0.56,-L*0.25+fl);x.lineTo(-L*0.44,-L*0.21);x.fill();
+ // running lights + lantern glow at night
+ if(!dn){x.globalCompositeOperation='lighter';x.fillStyle='#ff4a4a';x.beginPath();x.arc(L*0.3,-L*0.095,L*0.012,0,6.283);x.fill();x.fillStyle='#4aff8a';x.beginPath();x.arc(L*0.26,-L*0.1,L*0.01,0,6.283);x.fill();const r=L*0.18,g=x.createRadialGradient(-L*0.05,-L*0.16,0,-L*0.05,-L*0.16,r);g.addColorStop(0,'rgba(255,190,100,0.45)');g.addColorStop(1,'rgba(255,160,80,0)');x.fillStyle=g;x.fillRect(-L*0.05-r,-L*0.16-r,r*2,r*2);x.globalCompositeOperation='source-over';}
+ x.restore();
+ // stern sign (drawn unmirrored so it reads correctly) and tin cans for the first month of marriage
+ const txt=justM?'Just Married':wed?'Mr & Mrs F ♥':'B ♥ H',fs=Math.max(7,Math.round(L*(justM?0.075:0.085)));x.font=`italic 700 ${fs}px ${PSF}`;const tw=x.measureText(txt).width,bx=sternX+L*0.02,by=y-L*0.15;
+ x.fillStyle=dn?'#fffaf0':'#2a2238';x.strokeStyle=dn?'#c8a060':'#d9a24a';x.lineWidth=Math.max(1,L*0.008);x.beginPath();if(x.roundRect)x.roundRect(bx,by-fs*0.7,tw+fs*0.8,fs*1.4,fs*0.3);else x.rect(bx,by-fs*0.7,tw+fs*0.8,fs*1.4);x.fill();x.stroke();
+ x.fillStyle=dn?'#c8243f':'#ffd98a';x.textAlign='left';x.textBaseline='middle';x.fillText(txt,bx+fs*0.4,by);
+ if(justM){x.strokeStyle=dn?'rgba(80,80,90,0.7)':'rgba(200,200,220,0.5)';x.lineWidth=Math.max(1,U*0.0008);const sR=bx+tw+fs*0.8;for(let i=0;i<3;i++){const cx=sR+L*(0.1+i*0.15),cy=y-L*0.01-Math.abs(Math.sin(pT*9+i*1.7))*L*0.05;x.beginPath();x.moveTo(sternX,y-L*0.05);x.lineTo(cx,cy);x.stroke();x.fillStyle=dn?'#c9ced8':'#8a8aa0';x.fillRect(cx-L*0.045,cy-L*0.04,L*0.09,L*0.075);x.fillStyle=dn?'#8a909c':'#5a5a70';x.fillRect(cx-L*0.045,cy-L*0.012,L*0.09,L*0.014);x.fillStyle=dn?'#e8ecf2':'#aaaac0';x.fillRect(cx-L*0.045,cy-L*0.04,L*0.09,L*0.01);}}
+ x.restore();x.globalAlpha=1;x.globalCompositeOperation='source-over';}
 // ---------- the Honeybee paddlewheel ferry: big sternwheeler in the front lane, banner counts the days ----------
 var pFer=null,pFerBox=null,pFerToot=-99;
 function pFerText(){const c=pClockDays(),n=c.days;
